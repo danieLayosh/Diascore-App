@@ -1,16 +1,16 @@
-from fastapi import APIRouter, HTTPException, UploadFile, Form
+from fastapi import APIRouter, HTTPException, UploadFile, Form, File
 from models.omrModels import OMRResponse
 from services.omr import do_omr_two_pages, read_image
 from typing import List
 
 omrRouter = APIRouter()
 
-@omrRouter.post("/process-omr", response_model=OMRResponse)
+@omrRouter.post(path="/process-omr", response_model=OMRResponse)
 async def process_omr(
-    files: List[UploadFile],
+    files: List[UploadFile] = File(...),
     pORt: str = Form(...),  # Expecting "p" for parent, "t" for teacher
     kORs: str = Form(...)   # Expecting "kids" or "school"
-):
+) -> dict[str, dict[int, int]]:
     try:
         # Convert each uploaded file into an image
         images = [read_image(file) for file in files]
