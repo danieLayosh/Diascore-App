@@ -1,10 +1,23 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException, Header
 import uvicorn
 from routers.omrRoute import omrRouter
+import os
+from dotenv import load_dotenv 
+
+load_dotenv()
 
 app = FastAPI()
 
-app.include_router(omrRouter, prefix="/api/v1/omr", tags=["OMR"])
+# Read API Key from environment
+API_KEY = os.getenv("API_KEY")  
+
+# Function to validate API Key
+def validate_api_key(x_api_key: str =Header(None)):
+    if x_api_key != API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid API Key")
+    return True
+
+app.include_router(omrRouter, prefix="/api/v1/omr", tags=["OMR"], dependencies=[Depends(validate_api_key)])
 
 @app.get("/")
 def read_root():
