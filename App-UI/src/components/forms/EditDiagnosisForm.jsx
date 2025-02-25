@@ -10,50 +10,45 @@
  - kORs (kids or students - kids or school)
  - Diagnosis (link to Diagnosis Form || Dianosis Form Photo || Fill Manual)
 */}
-import { Form, Input, CheckboxGroup, Checkbox, DateInput} from '@heroui/react';
-import {CalendarDate, parseDate} from "@internationalized/date";
-import { useState, useEffect  } from 'react';
+import { Form, Input, CheckboxGroup, Checkbox, DateInput } from '@heroui/react';
+import { CalendarDate, parseDate } from "@internationalized/date";
+import { useState, useEffect } from 'react';
 import { getDiagnosticDataByUUID } from '../../firebase/firestore/diagnoses';
 import PropTypes from 'prop-types';
 
 const EditDiagnosisForm = ({ id }) => {
     const [submitted, setSubmitted] = useState(false);
-    const [selectedGender, setSelectedGender] = useState(["boy"]);
-    const [selectedType, setSelectedType] = useState(['kids']);
-    const [selectedFiller, setSelectedFiller] = useState(['p']);
     const [diagnosisData, setDiagnosisData] = useState(null);
 
-    console.log("id: ", id);
-    console.log("Diagnosis Data:", diagnosisData);
-
+    // States for controlled inputs
+    const [selectedGender, setSelectedGender] = useState([]);
+    const [selectedType, setSelectedType] = useState([]);
+    const [selectedFiller, setSelectedFiller] = useState([]);
 
     useEffect(() => {
         if (id) {
             const fetchDiagnosisData = async () => {
                 try {
-                    const diagnosisData = await getDiagnosticDataByUUID(id);
-                    console.log("Diagnosis Data:", diagnosisData);
-                    setDiagnosisData(diagnosisData);
+                    const data = await getDiagnosticDataByUUID(id);
+                    console.log("Diagnosis Data:", data);
+                    setDiagnosisData(data);
+
+                    // Update state when data is fetched
+                    setSelectedGender([data?.gender || "boy"]);
+                    setSelectedType([data?.type || "kids"]);
+                    setSelectedFiller([data?.filler || "p"]);
                 } catch (error) {
                     console.error("Error fetching diagnosis data:", error);
                 }
             };
-            
+
             fetchDiagnosisData();
         }
-    }, [id]); // Runs only when `id` changes
+    }, [id]);
 
-    const handleChange = (values) => {
-        setSelectedGender(values.slice(-1));
-    };
-
-    const handleTypeChange = (values) => {
-        setSelectedType(values.slice(-1));
-    };
-
-    const handleFillerChange = (values) => {
-        setSelectedFiller(values.slice(-1));
-    };
+    const handleChange = (values) => setSelectedGender(values.slice(-1));
+    const handleTypeChange = (values) => setSelectedType(values.slice(-1));
+    const handleFillerChange = (values) => setSelectedFiller(values.slice(-1));
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -69,66 +64,58 @@ const EditDiagnosisForm = ({ id }) => {
         });
     };
 
-    // Function to get today's date in 'YYYY-MM-DD' format
-    const getTodayDate = () => {
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-      const dd = String(today.getDate()).padStart(2, '0');
-      return `${yyyy}-${mm}-${dd}`;
-    };
+    if (!diagnosisData) {
+        return <p>Loading...</p>; // Prevents rendering empty fields
+    }
 
     return (
         <div className="flex flex-col items-center justify-center w-full shadow-card p-4 rounded-xl">
             <h3 className="text-2xl font-bold text-black">Edit Diagnosis</h3>
 
             <Form
-            onSubmit={handleSubmit}
-            className="flex w-full flex-wrap"
-            validationBehavior="native"
-            id='edit-diagnosis-form'
+                onSubmit={handleSubmit}
+                className="flex w-full flex-wrap"
+                validationBehavior="native"
+                id="edit-diagnosis-form"
             >
                 <Input
                     isRequired
                     className="max-w-[220px]"
                     label="Patient Name"
                     name="patientName"
-                    // labelPlacement='outside'
                     type="text"
-                    variant="bordered" 
-                    classNames={{ 
+                    variant="bordered"
+                    classNames={{
                         label: "text-lg text-black",
-                        input: "border-none focus:outline-none focus:ring-0", // Removes inner border and focus ring
+                        input: "border-none focus:outline-none focus:ring-0",
                     }}
-                    onClear={() => console.log("input cleared")}
+                    defaultValue={diagnosisData?.patientName || ''}
                 />
-                <Input 
+                <Input
                     className="max-w-[220px]"
-                    label="Patient ID" 
-                    // labelPlacement='outside'
-                    name='patientID'
-                    type="text" 
-                    variant="bordered" 
+                    label="Patient ID"
+                    name="patientID"
+                    type="text"
+                    variant="bordered"
                     minLength={9}
                     maxLength={9}
-                    classNames={{ 
+                    classNames={{
                         label: "text-lg text-black",
-                        input: "border-none focus:outline-none focus:ring-0", // Removes inner border and focus ring
+                        input: "border-none focus:outline-none focus:ring-0",
                     }}
-                    onClear={() => console.log("input cleared")}
+                    defaultValue={diagnosisData?.patientID || ''}
                 />
                 <div className="border-white border-2 p-2 rounded-xl">
                     <CheckboxGroup
                         isRequired
                         size="lg"
                         label="Gender"
-                        name='gender'
-                        defaultValue={["boy"]}
+                        name="gender"
                         orientation="horizontal"
                         value={selectedGender}
                         onChange={handleChange}
                         classNames={{ label: "text-lg text-black" }}
-                        className='flex flex-row'
+                        className="flex flex-row"
                     >
                         <Checkbox value="boy">Boy</Checkbox>
                         <Checkbox value="girl">Girl</Checkbox>
@@ -137,61 +124,59 @@ const EditDiagnosisForm = ({ id }) => {
                 <div className="flex w-full flex-wrap">
                     <DateInput
                         isRequired
-                        defaultValue={parseDate("2020-04-04")}
+                        defaultValue={diagnosisData?.birthDate ? parseDate(diagnosisData.birthDate) : parseDate("2020-04-04")}
                         className="max-w-[220px]"
                         label="Birth date"
-                        name='birthDate'
+                        name="birthDate"
                         placeholderValue={new CalendarDate(1995, 11, 6)}
-                        variant='bordered'
-                        classNames={{ 
+                        variant="bordered"
+                        classNames={{
                             label: "text-lg text-black",
-                            input: "text-lg mb-2 ",
+                            input: "text-lg mb-2",
                             errorMessage: "text-red-500 text-lg",
                         }}
-                     />
+                    />
                 </div>
                 <div className="flex w-full flex-wrap">
                     <DateInput
                         isRequired
-                        defaultValue={parseDate(getTodayDate())}
+                        defaultValue={diagnosisData?.diagnosisDate ? parseDate(diagnosisData.diagnosisDate) : parseDate("2024-01-01")}
                         className="max-w-[220px]"
                         label="Diagnosis date"
-                        name='diagnosisDate'
+                        name="diagnosisDate"
                         placeholderValue={new CalendarDate(1995, 11, 6)}
-                        variant='bordered'
-                        classNames={{ 
+                        variant="bordered"
+                        classNames={{
                             label: "text-lg text-black",
-                            input: "text-lg mb-2 ",
+                            input: "text-lg mb-2",
                             errorMessage: "text-red-500 text-lg",
                         }}
-                     />
+                    />
                 </div>
                 <Input
                     isRequired
                     className="max-w-[220px]"
                     label="Diagnosis filler Name"
                     name="DiagnosisFillerName"
-                    // labelPlacement='outside'
                     type="text"
-                    variant="bordered" 
-                    classNames={{ 
+                    variant="bordered"
+                    classNames={{
                         label: "text-lg text-black",
-                        input: "border-none focus:outline-none focus:ring-0", // Removes inner border and focus ring
+                        input: "border-none focus:outline-none focus:ring-0",
                     }}
-                    onClear={() => console.log("input cleared")}
+                    defaultValue={diagnosisData?.DiagnosisFillerName || ''}
                 />
                 <div className="border-white border-2 p-2 rounded-xl">
                     <CheckboxGroup
                         isRequired
                         size="lg"
                         label="Type"
-                        name='type'
-                        defaultValue={["kids"]}
-                        orientation='horizontal'
+                        name="type"
+                        orientation="horizontal"
                         value={selectedType}
                         onChange={handleTypeChange}
                         classNames={{ label: "text-lg text-black" }}
-                        className='flex flex-row'
+                        className="flex flex-row"
                     >
                         <Checkbox value="kids">Kids</Checkbox>
                         <Checkbox value="school">School</Checkbox>
@@ -202,26 +187,24 @@ const EditDiagnosisForm = ({ id }) => {
                         isRequired
                         size="lg"
                         label="Filler"
-                        name='filler'
-                        defaultValue={["Parent"]}
+                        name="filler"
                         orientation="horizontal"
                         value={selectedFiller}
                         onChange={handleFillerChange}
                         classNames={{ label: "text-lg text-black" }}
-                        className='flex flex-row'
+                        className="flex flex-row"
                     >
                         <Checkbox value="p">Parent</Checkbox>
                         <Checkbox value="t">Teacher</Checkbox>
                     </CheckboxGroup>
                 </div>
             </Form>
-        </div>    
-   );
+        </div>
+    );
 };
 
 EditDiagnosisForm.propTypes = {
-  id: PropTypes.any.isRequired, // Ensure it expects an array
+    id: PropTypes.any.isRequired,
 };
-
 
 export default EditDiagnosisForm;
