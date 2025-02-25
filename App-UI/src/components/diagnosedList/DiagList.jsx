@@ -15,6 +15,7 @@ import {
 import { columns } from "./columns";
 import { EyeIcon, EditIcon, DeleteIcon } from "./icons";
 import { DiagnosisPopup } from '../diagnosisPopUp/DiagnosisPopup';
+import { useNavigate } from "react-router-dom";
 
 const statusColorMap = {
   COMPLETED: "success",
@@ -25,10 +26,20 @@ const statusColorMap = {
 export const DiagList = ({ Diagnoses }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedDiagnosis, setSelectedDiagnosis] = useState(null);
+  const navigate = useNavigate();
 
   const handleDetailsClick = (diagnosis) => {
     setSelectedDiagnosis(diagnosis);
     onOpen(); // Open the modal
+  };
+
+  const handleEditClick = (diagnosis) => {
+    setSelectedDiagnosis(diagnosis);
+    const id = diagnosis.id;  // Assuming diagnosis has an 'id' field
+
+    // Navigate to the EditDiagnosisForm with the diagnosis id in the URL
+    console.log("Navigating to edit diagnosis form with id:", id);
+    navigate(`/diagnosis/edit/${id}`);
   };
 
   const renderCell = useCallback((user, columnKey) => {
@@ -62,7 +73,10 @@ export const DiagList = ({ Diagnoses }) => {
               </span>
             </Tooltip>
             <Tooltip content="Edit user">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+              <span 
+                className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                onClick={() => handleEditClick(user)}
+              >
                 <EditIcon />
               </span>
             </Tooltip>
