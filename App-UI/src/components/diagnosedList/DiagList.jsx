@@ -18,6 +18,7 @@ import { DiagnosisPopup } from '../diagnosisPopUp/DiagnosisPopup';
 import { useNavigate } from "react-router-dom";
 import { deleteDiagnosticData } from "../../firebase/firestore/diagnoses"
 import { ConfirmDelete } from '../modal/ConfirmDelete';
+import { GoGear } from "react-icons/go";
 
 const statusColorMap = {
   COMPLETED: "success",
@@ -59,6 +60,11 @@ export const DiagList = ({ Diagnoses }) => {
     setConfirmDeleteOpen(false);  // Close the confirmation modal
   };
 
+  const handleProcessDiagnosis = (diagnosis) => {
+    console.log("Processing diagnosis");
+
+  };
+
   const renderCell = useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
 
@@ -95,6 +101,14 @@ export const DiagList = ({ Diagnoses }) => {
                 onClick={() => handleEditClick(user)}
               >
                 <EditIcon />
+              </span>
+            </Tooltip>
+            <Tooltip content="Process diagnosis">
+              <span 
+                className="text-lg text-default-500 cursor-pointer active:opacity-50"
+                onClick={() => handleProcessDiagnosis(user)}
+              >
+                <GoGear   />
               </span>
             </Tooltip>
             <Tooltip color="danger" content="Delete user">
