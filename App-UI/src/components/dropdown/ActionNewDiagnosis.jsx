@@ -7,10 +7,10 @@ import {
     Button,
     cn,
   } from "@heroui/react";
+import { useNavigate } from "react-router-dom"; 
 import useAlert from "../../context/useAlert"; 
 import { useAuth } from "../../context/useAuth";
 import { addNewDiagnosticData, checkDiagnosisDataExists, updateDiagnosticData } from "../../firebase/firestore/diagnoses";
-import { update } from "lodash";
 
   export const AddNoteIcon = (props) => {
     return (
@@ -98,11 +98,7 @@ import { update } from "lodash";
     const iconClasses = "text-xl text-default-500 pointer-events-none flex-shrink-0";
     const { showAlert } = useAlert();
     const { user } = useAuth();
-
-    const handleCloseWithOutSave = async () => {
-      console.log("Closing without saving");
-      // TODO: Add close without saving logic
-    };
+    const navigate = useNavigate();
 
     const handleSaveDiagnosis = async () => {
       console.log("Saving diagnosis");
@@ -125,6 +121,8 @@ import { update } from "lodash";
         const diagnosisExists = await checkDiagnosisDataExists(formDataObj["documentId"]);
         if (diagnosisExists) {
           updateDiagnosticData(formDataObj);
+          showAlert("Diagnosis saved successfully", "success");
+          navigate("/home");
           return;
         }
 
@@ -150,9 +148,10 @@ import { update } from "lodash";
             showAlert("Please fill in the required fields", "error");
             return;
         } else {
+          delete formDataObj["documentId"];
           addNewDiagnosticData(formDataObj);
           showAlert("Diagnosis saved successfully", "success");
-          // TODO: Store the data in the database and move to Diagnosis page for the next steps
+          navigate("/home");
         }
         console.log("Form Data:", formDataObj);
       }
