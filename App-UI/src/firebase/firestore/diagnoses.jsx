@@ -1,4 +1,4 @@
-import { collection, updateDoc, getDoc, addDoc, doc } from "firebase/firestore";
+import { collection, updateDoc, getDoc, addDoc, doc, deleteDoc } from "firebase/firestore";
 import { auth, firestore } from "../firebase"; 
 
 export const addNewDiagnosticData = async (diagnosticData) => {
@@ -117,6 +117,38 @@ export const getDiagnosticDataByUUID = async (uuid) => {
         }
     } catch (error) {
         console.error("Error getting diagnostic data by UUID:", error);
+        throw error;
+    }
+};
+
+export const deleteDiagnosticData = async (id) => {
+    console.log("Deleting diagnostic data:", id);
+    try {
+        const user = auth.currentUser;
+        if (!user) {
+            throw new Error("No authenticated user found");
+        }
+
+        // Access the specific user's document
+        const userDocRef = doc(firestore, "Users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (!userDoc.exists()) {
+            throw new Error("No user data found for the authenticated user: ${user.uid}");
+        }
+
+        // Access the Diagnoses sub-collection for the specific user
+        const diagDocRef = doc(userDocRef, "Diagnoses", id);
+
+        const diagSnapshot = await getDoc(diagDocRef);
+        if (diagSnapshot.exists()) {
+            await deleteDoc(diagDocRef);
+            console.log(`Diagnostic data with id: ${id} deleted successfully.`);
+        } else {
+            throw new Error("No diagnostic data found for the id: ${id}");
+        }
+    } catch (error) {
+        console.error("Error deleting diagnostic data by id:", error);
         throw error;
     }
 };
