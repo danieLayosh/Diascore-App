@@ -16,10 +16,11 @@ import { columns } from "./columns";
 import { EyeIcon, EditIcon, DeleteIcon } from "./icons";
 import { DiagnosisPopup } from '../diagnosisPopUp/DiagnosisPopup';
 import { useNavigate } from "react-router-dom";
-import { deleteDiagnosticData } from "../../firebase/firestore/diagnoses"
+import { deleteDiagnosticData } from "../../firebase/firestore/diagnoses";
 import { ConfirmDelete } from '../modal/ConfirmDelete';
 import { GoGear } from "react-icons/go";
 import { OmrOrLink } from '../modal/OmrOrLink';
+import { OmrModal } from '../modal/OmrModal';
 
 const statusColorMap = {
   COMPLETED: "success",
@@ -34,6 +35,8 @@ export const DiagList = ({ Diagnoses }) => {
   const [diagnosisToDelete, setDiagnosisToDelete] = useState(null);
   const [isOmrOrLinkOpen, setIsOmrOrLinkOpen] = useState(false);  
   const [diagnosisToProcess, setDiagnosisToProcess] = useState(null);  
+  const [isOmrOpen, setIsOmrOpen] = useState(false);  
+
   const navigate = useNavigate();
 
   const handleDetailsClick = (diagnosis) => {
@@ -44,34 +47,44 @@ export const DiagList = ({ Diagnoses }) => {
   const handleEditClick = (diagnosis) => {
     setSelectedDiagnosis(diagnosis);
     const id = diagnosis.id;  // Assuming diagnosis has an 'id' field
-
-    // Navigate to the EditDiagnosisForm with the diagnosis id in the URL
-    console.log("Navigating to edit diagnosis form with id:", id);
     navigate(`/diagnosis/edit/${id}`);
   };
 
   const handleDeleteClick = (diagnosis) => {
-    setDiagnosisToDelete(diagnosis);  // Store the diagnosis to delete
-    setConfirmDeleteOpen(true);  // Open the confirmation modal
+    setDiagnosisToDelete(diagnosis);
+    setConfirmDeleteOpen(true);
   };
 
   const handleDeleteConfirm = () => {
     if (diagnosisToDelete) {
-      console.log("Deleting diagnosis:", diagnosisToDelete);
       deleteDiagnosticData(diagnosisToDelete.id);
     }
-    setConfirmDeleteOpen(false);  // Close the confirmation modal
+    setConfirmDeleteOpen(false);
   };
 
   const handleProcessDiagnosis = (diagnosis) => {
-    setDiagnosisToProcess(diagnosis);  // Set the diagnosis to process
-    setIsOmrOrLinkOpen(true);  // Open the OmrOrLink modal
+    setDiagnosisToProcess(diagnosis);
+    setIsOmrOrLinkOpen(true);
   };
-  
+
   const handleOmrOrLinkConfirm = (choice) => {
-    console.log("User selected:", choice);  // Logs the selected choice
-    console.log("Processing diagnosis with OMR or Link:", diagnosisToProcess);
-    setIsOmrOrLinkOpen(false);  // Close the modal after processing
+    setIsOmrOrLinkOpen(false);
+    if (choice === "OMR") {
+      handleOmrModalOpen();
+    }
+  };
+
+  const handleOmrModalOpen = () => {
+    setIsOmrOpen(!isOmrOpen);
+  };
+
+  const handleOmeModalClose = () => {
+    setIsOmrOpen(false);
+  };
+
+  const handleModalFormSubmit = (formData) => {
+    console.log('Form submitted with data:', formData);
+    handleOmeModalClose();
   };
 
   const renderCell = useCallback((user, columnKey) => {
@@ -117,7 +130,7 @@ export const DiagList = ({ Diagnoses }) => {
                 className="text-lg text-default-500 cursor-pointer active:opacity-50"
                 onClick={() => handleProcessDiagnosis(user)}
               >
-                <GoGear   />
+                <GoGear />
               </span>
             </Tooltip>
             <Tooltip color="danger" content="Delete user">
@@ -154,25 +167,29 @@ export const DiagList = ({ Diagnoses }) => {
         </TableBody>
       </Table>
 
-      {/* Modal */}
       <DiagnosisPopup isOpen={isOpen} onClose={onClose} diagnosis={selectedDiagnosis} />
 
-      {/* Confirmation Delete Modal */}
       <ConfirmDelete 
         isOpen={confirmDeleteOpen} 
         onOpenChange={setConfirmDeleteOpen} 
         onConfirm={handleDeleteConfirm} 
       />
-      {/* OmrOrLink Modal */}
+      
       <OmrOrLink 
         isOpen={isOmrOrLinkOpen} 
         onOpenChange={setIsOmrOrLinkOpen} 
         onConfirm={handleOmrOrLinkConfirm} 
+      />
+
+      <OmrModal
+        isOpen={isOmrOpen}
+        onOpenChange={handleOmrModalOpen}
+        onConfirm={handleModalFormSubmit}
       />
     </>
   );
 };
 
 DiagList.propTypes = {
-  Diagnoses: PropTypes.array.isRequired, // Ensure it expects an array
+  Diagnoses: PropTypes.array.isRequired,
 };
