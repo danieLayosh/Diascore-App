@@ -6,8 +6,6 @@ import {
     ModalFooter,
     Button,
     Input,
-    CheckboxGroup,
-    Checkbox,
 } from "@heroui/react";
 import { useState } from "react";
 
@@ -15,16 +13,6 @@ import { useState } from "react";
 export const OmrModal = ({ isOpen, onOpenChange, onConfirm }) => {
     const [image1, setImage1] = useState(null);
     const [image2, setImage2] = useState(null);
-    const [kORs, setkORs] = useState(['kids']);
-    const [pORt, setpORt] = useState(['p']);
-
-    const handleTypeChange = (values) => {
-        setkORs(values.slice(-1));
-    };
-
-    const handleFillerChange = (values) => {
-        setpORt(values.slice(-1));
-    };
 
     const handleImageChange = (e, setImage) => {
         const file = e.target.files[0];
@@ -37,20 +25,18 @@ export const OmrModal = ({ isOpen, onOpenChange, onConfirm }) => {
         const data = {
             image1,
             image2,
-            kORs,
-            pORt,
         };
         onConfirm(data);
-        onOpenChange(false);  // Close modal after confirmation
+        onOpenChange(false);
     };
 
     const handleSubmit = () => {
         handleOmr();
-        onOpenChange(false);  // Close modal after selection
+        onOpenChange(false); 
     };
 
     const handleCancel = () => {
-        onOpenChange(false);  // Close modal on cancel
+        onOpenChange(false);  
     };
 
     return (
@@ -80,41 +66,6 @@ export const OmrModal = ({ isOpen, onOpenChange, onConfirm }) => {
                         />
                         {image2 && <img src={image2} alt="Image 2 Preview" width="100" />}
                     </div>
-
-                    <div className="border-white border-2 p-2 rounded-xl">
-                    <CheckboxGroup
-                        isRequired
-                        size="lg"
-                        label="Type"
-                        name='type'
-                        defaultValue={["kids"]}
-                        orientation='horizontal'
-                        value={kORs}
-                        onChange={handleTypeChange}
-                        classNames={{ label: "text-lg text-black" }}
-                        className='flex flex-row'
-                    >
-                        <Checkbox value="kids">Kids</Checkbox>
-                        <Checkbox value="school">School</Checkbox>
-                    </CheckboxGroup>
-                </div>
-                <div className="border-white border-2 p-2 rounded-xl">
-                    <CheckboxGroup
-                        isRequired
-                        size="lg"
-                        label="Filler"
-                        name='filler'
-                        defaultValue={["Parent"]}
-                        orientation="horizontal"
-                        value={pORt}
-                        onChange={handleFillerChange}
-                        classNames={{ label: "text-lg text-black" }}
-                        className='flex flex-row'
-                    >
-                        <Checkbox value="p">Parent</Checkbox>
-                        <Checkbox value="t">Teacher</Checkbox>
-                    </CheckboxGroup>
-                </div>
                 </ModalBody>
                 <ModalFooter>
                     <Button color="secondary" onPress={handleCancel} className="font-bold">
