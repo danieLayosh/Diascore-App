@@ -1,4 +1,4 @@
-import { collection, getDoc, addDoc, doc } from "firebase/firestore";
+import { collection, updateDoc, getDoc, addDoc, doc } from "firebase/firestore";
 import { auth, firestore } from "../firebase"; 
 
 export const addNewDiagnosticData = async (diagnosticData) => {
@@ -25,6 +25,68 @@ export const addNewDiagnosticData = async (diagnosticData) => {
         return { id: newDiagRef.id, ...diagnosticData };
     } catch (error) {
         console.error("Error adding new diagnostic data:", error);
+        throw error;
+    }
+};
+
+export const checkDiagnosisDataExists = async (uuid) => {
+    console.log("Checking if diagnosis data exists:", uuid);
+    try {
+        const user = auth.currentUser;
+        if (!user) {
+            throw new Error("No authenticated user found");
+        }
+
+        // Access the specific user's document
+        const userDocRef = doc(firestore, "Users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (!userDoc.exists()) {
+            throw new Error("No user data found for the authenticated user: ${user.uid}");
+        }
+        // Access the Diagnoses sub-collection for the specific user
+        const diagCollectionRef = collection(userDocRef, "Diagnoses");
+
+        const diagSnapshot = await getDoc(doc(diagCollectionRef, uuid));
+        return diagSnapshot.exists();
+    } catch (error) {
+        console.error("Error checking if diagnosis data exists:", error);
+        throw error;
+    }
+};
+
+export const updateDiagnosticData = async (diagnosticData) => {
+    console.log("Updating diagnostic data:", diagnosticData);
+    try {
+        const user = auth.currentUser;
+        if (!user) {
+            throw new Error("No authenticated user found");
+        }
+
+        // Access the specific user's document
+        const userDocRef = doc(firestore, "Users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (!userDoc.exists()) {
+            throw new Error("No user data found for the authenticated user: ${user.uid}");
+        }
+        
+        // Extract document ID and remove it from the update object
+        const { documentId, ...updatedData } = diagnosticData;
+
+        if (!documentId) {
+            throw new Error("Missing documentId for update.");
+        }
+
+        // Reference to the specific diagnosis document inside Diagnoses collection
+        const diagDocRef = doc(userDocRef, "Diagnoses", documentId);
+
+        await updateDoc(diagDocRef, updatedData);
+        console.log("Diagnostic data successfully updated:", documentId);
+
+        return { id: diagnosticData.id, ...diagnosticData };
+    } catch (error) {
+        console.error("Error updating diagnostic data:", error);
         throw error;
     }
 };
