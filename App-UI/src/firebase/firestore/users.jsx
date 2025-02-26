@@ -158,7 +158,7 @@ export const getAuthenticatedUserDataWithDiagnoses = async () => {
         const userDoc = await getDoc(userDocRef);
 
         if (!userDoc.exists()) {
-            throw new Error("No user data found for the authenticated user: ${user.uid}");
+            throw new Error(`No user data found for the authenticated user: ${user.uid}`);
         }
 
         const userData = userDoc.data();
