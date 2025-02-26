@@ -16,6 +16,7 @@ import { columns } from "./columns";
 import { EyeIcon, EditIcon, DeleteIcon } from "./icons";
 import { DiagnosisPopup } from '../diagnosisPopUp/DiagnosisPopup';
 import { useNavigate } from "react-router-dom";
+import { deleteDiagnosticData } from "../../firebase/firestore/diagnoses"
 
 const statusColorMap = {
   COMPLETED: "success",
@@ -40,6 +41,12 @@ export const DiagList = ({ Diagnoses }) => {
     // Navigate to the EditDiagnosisForm with the diagnosis id in the URL
     console.log("Navigating to edit diagnosis form with id:", id);
     navigate(`/diagnosis/edit/${id}`);
+  };
+
+  const handleDeleteClick = (diagnosis) => {
+    // Delete the diagnosis
+    console.log("Deleting diagnosis:", diagnosis);
+    deleteDiagnosticData(diagnosis.id)
   };
 
   const renderCell = useCallback((user, columnKey) => {
@@ -81,7 +88,10 @@ export const DiagList = ({ Diagnoses }) => {
               </span>
             </Tooltip>
             <Tooltip color="danger" content="Delete user">
-              <span className="text-lg text-danger cursor-pointer active:opacity-50">
+              <span 
+                className="text-lg text-danger cursor-pointer active:opacity-50"
+                onClick={() => handleDeleteClick(user)}
+              >
                 <DeleteIcon />
               </span>
             </Tooltip>
