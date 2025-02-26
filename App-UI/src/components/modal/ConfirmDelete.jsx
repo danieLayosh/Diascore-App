@@ -5,9 +5,9 @@ import {
     ModalBody,
     ModalFooter,
     Button,
-    useDisclosure,
 } from "@heroui/react";
 
+// eslint-disable-next-line react/prop-types
 export const ConfirmDelete = ({ isOpen, onOpenChange, onConfirm }) => {
     const handleDeleteClick = () => {
         onConfirm();  // Call the onConfirm callback passed from the parent component
