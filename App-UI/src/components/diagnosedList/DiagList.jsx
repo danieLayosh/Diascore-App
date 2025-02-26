@@ -17,6 +17,7 @@ import { EyeIcon, EditIcon, DeleteIcon } from "./icons";
 import { DiagnosisPopup } from '../diagnosisPopUp/DiagnosisPopup';
 import { useNavigate } from "react-router-dom";
 import { deleteDiagnosticData } from "../../firebase/firestore/diagnoses"
+import { ConfirmDelete } from '../modal/ConfirmDelete';
 
 const statusColorMap = {
   COMPLETED: "success",
@@ -27,6 +28,8 @@ const statusColorMap = {
 export const DiagList = ({ Diagnoses }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedDiagnosis, setSelectedDiagnosis] = useState(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false); 
+  const [diagnosisToDelete, setDiagnosisToDelete] = useState(null);
   const navigate = useNavigate();
 
   const handleDetailsClick = (diagnosis) => {
@@ -44,9 +47,16 @@ export const DiagList = ({ Diagnoses }) => {
   };
 
   const handleDeleteClick = (diagnosis) => {
-    // Delete the diagnosis
-    console.log("Deleting diagnosis:", diagnosis);
-    deleteDiagnosticData(diagnosis.id)
+    setDiagnosisToDelete(diagnosis);  // Store the diagnosis to delete
+    setConfirmDeleteOpen(true);  // Open the confirmation modal
+  };
+
+  const handleDeleteConfirm = () => {
+    if (diagnosisToDelete) {
+      console.log("Deleting diagnosis:", diagnosisToDelete);
+      deleteDiagnosticData(diagnosisToDelete.id);
+    }
+    setConfirmDeleteOpen(false);  // Close the confirmation modal
   };
 
   const renderCell = useCallback((user, columnKey) => {
@@ -123,6 +133,13 @@ export const DiagList = ({ Diagnoses }) => {
 
       {/* Modal */}
       <DiagnosisPopup isOpen={isOpen} onClose={onClose} diagnosis={selectedDiagnosis} />
+
+      {/* Confirmation Delete Modal */}
+      <ConfirmDelete 
+        isOpen={confirmDeleteOpen} 
+        onOpenChange={setConfirmDeleteOpen} 
+        onConfirm={handleDeleteConfirm} 
+      />
     </>
   );
 };
