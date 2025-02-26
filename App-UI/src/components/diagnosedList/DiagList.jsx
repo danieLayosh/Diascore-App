@@ -21,6 +21,7 @@ import { ConfirmDelete } from '../modal/ConfirmDelete';
 import { GoGear } from "react-icons/go";
 import { OmrOrLink } from '../modal/OmrOrLink';
 import { OmrModal } from '../modal/OmrModal';
+import { omrRequest } from '../../api/omr_utils';
 
 const statusColorMap = {
   COMPLETED: "success",
@@ -82,14 +83,12 @@ export const DiagList = ({ Diagnoses }) => {
     setIsOmrOpen(false);
   };
 
-  const handleModalFormSubmit = (formData) => {
+  const handleModalFormSubmit = async (formData) => {
     console.log('Form submitted with data:', formData);
     const { image1, image2, ...rest } = formData;
-    const modifiedObj = {
-      files: [image1, image2], 
-      ...rest
-    };
-    console.log('Modified object:', modifiedObj);
+    // API call to OMR
+    const response = await omrRequest(image1, image2, rest.pORt, rest.kORs)
+    console.log('OMR API response:', response);
     handleOmeModalClose();
   };
 
