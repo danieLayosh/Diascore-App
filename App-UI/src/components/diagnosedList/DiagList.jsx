@@ -22,10 +22,11 @@ import { GoGear } from "react-icons/go";
 import { OmrOrLink } from '../modal/OmrOrLink';
 import { OmrModal } from '../modal/OmrModal';
 import { omrRequest } from '../../api/omr_utils';
+import { updateAnswersArray, updateDiagnosisStatus } from '../../firebase/firestore/diagnoses';
 
 const statusColorMap = {
   COMPLETED: "success",
-  CANCELLED: "danger",
+  READY: "primary",
   PENDING: "warning",
 };
 
@@ -85,10 +86,18 @@ export const DiagList = ({ Diagnoses }) => {
 
   const handleModalFormSubmit = async (formData) => {
     console.log('Form submitted with data:', formData);
-    const { image1, image2, ...rest } = formData;
-    // API call to OMR
-    const response = await omrRequest(image1, image2, rest.pORt, rest.kORs)
-    console.log('OMR API response:', response);
+
+
+    if (diagnosisToProcess) {
+      const diagnosisId = diagnosisToProcess.id;
+      const { image1, image2} = formData;
+      // API call to OMR
+      const response = await omrRequest(image1, image2, diagnosisToProcess.pORt, diagnosisToProcess.kORs)
+      console.log('OMR API response:', response.answers);
+
+      await updateAnswersArray(diagnosisId, response.answers);
+      await updateDiagnosisStatus(diagnosisId, "READY");
+    }
     handleOmeModalClose();
   };
 
