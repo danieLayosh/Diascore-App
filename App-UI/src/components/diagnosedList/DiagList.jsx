@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { deleteDiagnosticData } from "../../firebase/firestore/diagnoses"
 import { ConfirmDelete } from '../modal/ConfirmDelete';
 import { GoGear } from "react-icons/go";
+import { OmrOrLink } from '../modal/OmrOrLink';
 
 const statusColorMap = {
   COMPLETED: "success",
@@ -31,6 +32,8 @@ export const DiagList = ({ Diagnoses }) => {
   const [selectedDiagnosis, setSelectedDiagnosis] = useState(null);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false); 
   const [diagnosisToDelete, setDiagnosisToDelete] = useState(null);
+  const [isOmrOrLinkOpen, setIsOmrOrLinkOpen] = useState(false);  
+  const [diagnosisToProcess, setDiagnosisToProcess] = useState(null);  
   const navigate = useNavigate();
 
   const handleDetailsClick = (diagnosis) => {
@@ -61,8 +64,14 @@ export const DiagList = ({ Diagnoses }) => {
   };
 
   const handleProcessDiagnosis = (diagnosis) => {
-    console.log("Processing diagnosis");
-
+    setDiagnosisToProcess(diagnosis);  // Set the diagnosis to process
+    setIsOmrOrLinkOpen(true);  // Open the OmrOrLink modal
+  };
+  
+  const handleOmrOrLinkConfirm = (choice) => {
+    console.log("User selected:", choice);  // Logs the selected choice
+    console.log("Processing diagnosis with OMR or Link:", diagnosisToProcess);
+    setIsOmrOrLinkOpen(false);  // Close the modal after processing
   };
 
   const renderCell = useCallback((user, columnKey) => {
@@ -153,6 +162,12 @@ export const DiagList = ({ Diagnoses }) => {
         isOpen={confirmDeleteOpen} 
         onOpenChange={setConfirmDeleteOpen} 
         onConfirm={handleDeleteConfirm} 
+      />
+      {/* OmrOrLink Modal */}
+      <OmrOrLink 
+        isOpen={isOmrOrLinkOpen} 
+        onOpenChange={setIsOmrOrLinkOpen} 
+        onConfirm={handleOmrOrLinkConfirm} 
       />
     </>
   );
