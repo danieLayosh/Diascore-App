@@ -84,6 +84,12 @@ export const DiagList = ({ Diagnoses }) => {
 
   const handleModalFormSubmit = (formData) => {
     console.log('Form submitted with data:', formData);
+    const { image1, image2, ...rest } = formData;
+    const modifiedObj = {
+      files: [image1, image2], 
+      ...rest
+    };
+    console.log('Modified object:', modifiedObj);
     handleOmeModalClose();
   };
 
