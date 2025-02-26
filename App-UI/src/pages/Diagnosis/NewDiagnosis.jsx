@@ -10,6 +10,7 @@ import ActionNewDiagnosis from "../../components/dropdown/ActionNewDiagnosis";
 import NewDiagnosisForm from "../../components/forms/NewDiagnosisForm";
 
 const NewDiagnosis = () => {
+    // eslint-disable-next-line no-unused-vars
     const { user, loading } = useAuth();
     const navigate = useNavigate();
     const { showAlert } = useAlert();
