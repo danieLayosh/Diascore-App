@@ -3,10 +3,25 @@ import uvicorn
 from routers.omrRoute import omrRouter
 import os
 from dotenv import load_dotenv 
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
 app = FastAPI()
+
+# Allow requests from any origin (or specify only your frontend origin)
+origins = [
+    "http://localhost:5173",  # Your frontend URL
+]
+
+# Enable CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Allows specific origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allows all headers
+)
 
 # Read API Key from environment
 API_KEY = os.getenv("API_KEY")  
