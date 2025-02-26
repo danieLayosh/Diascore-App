@@ -9,6 +9,8 @@ import useAlert from "../context/useAlert";
 import { DiagList } from "../components/diagnosedList/DiagList";
 import Loader from "../components/Loader"; 
 import Action from "../components/dropdown/Action";
+import { firestore } from "../firebase/firebase";
+import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot } from "firebase/firestore";
 
 const Home = () => {
     const { user, loading } = useAuth();
@@ -37,7 +39,7 @@ const Home = () => {
                 console.error("No authenticated user found");
                 return;
             }
-
+    
             try {
                 const { userData, diagnoses } = await getAuthenticatedUserDataWithDiagnoses();
                 setUserData(userData);
@@ -46,11 +48,27 @@ const Home = () => {
                 console.error("Error fetching user data and diagnoses:", error);
             }
         };
-        
+    
+        // Make sure to update the Firestore query to use modular API
+        const unsubscribeDiagnoses = onSnapshot(
+            collection(firestore, "Users", user.uid, "Diagnoses"),
+            (snapshot) => {
+                const updatedDiagnoses = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                setDiagnoses(updatedDiagnoses);
+            }
+        );
+    
         if (user) {
             fetchUserDataWithDiagnoses();
         }
+    
+        // Cleanup the listener when the component is unmounted or user changes
+        return () => unsubscribeDiagnoses();
     }, [user]);
+    
 
     if (loading) {
         return <div className="flex h-screen items-center justify-center size-max w-screen bg-slate-900"> <Loader/> </div>;
