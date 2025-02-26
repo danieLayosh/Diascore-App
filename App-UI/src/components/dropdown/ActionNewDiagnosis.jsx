@@ -118,14 +118,15 @@ import { addNewDiagnosticData, checkDiagnosisDataExists, updateDiagnosticData } 
         });
 
         // Check if the diagnosis data already exists
-        const diagnosisExists = await checkDiagnosisDataExists(formDataObj["documentId"]);
-        if (diagnosisExists) {
-          updateDiagnosticData(formDataObj);
-          showAlert("Diagnosis saved successfully", "success");
-          navigate("/home");
-          return;
+        if (formDataObj["documentId"]) {
+          const diagnosisExists = await checkDiagnosisDataExists(formDataObj["documentId"]);
+          if (diagnosisExists === true) {
+            updateDiagnosticData(formDataObj);
+            showAlert("Diagnosis saved successfully", "success");
+            navigate("/home");
+            return;
+          }
         }
-
         formDataObj["therapistID"] = user.uid;
         formDataObj["answers"] = [];
         formDataObj["status"] = "PENDING";
