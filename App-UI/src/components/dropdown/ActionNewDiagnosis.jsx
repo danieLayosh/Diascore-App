@@ -9,7 +9,8 @@ import {
   } from "@heroui/react";
 import useAlert from "../../context/useAlert"; 
 import { useAuth } from "../../context/useAuth";
-import { addNewDiagnosticData } from "../../firebase/firestore/diagnoses";
+import { addNewDiagnosticData, checkDiagnosisDataExists, updateDiagnosticData } from "../../firebase/firestore/diagnoses";
+import { update } from "lodash";
 
   export const AddNoteIcon = (props) => {
     return (
@@ -120,6 +121,13 @@ import { addNewDiagnosticData } from "../../firebase/firestore/diagnoses";
           formDataObj[key] = value; 
         });
 
+        // Check if the diagnosis data already exists
+        const diagnosisExists = await checkDiagnosisDataExists(formDataObj["documentId"]);
+        if (diagnosisExists) {
+          updateDiagnosticData(formDataObj);
+          return;
+        }
+
         formDataObj["therapistID"] = user.uid;
         formDataObj["answers"] = [];
         formDataObj["status"] = "PENDING";
@@ -148,8 +156,6 @@ import { addNewDiagnosticData } from "../../firebase/firestore/diagnoses";
         }
         console.log("Form Data:", formDataObj);
       }
-      
-      // TODO: Add save diagnosis logic
     };
     
     const handleProcessDiagnosis = async () => {
