@@ -87,7 +87,7 @@ const EditDiagnosisForm = ({ id }) => {
                     variant="bordered"
                     classNames={{
                         label: "text-lg text-black",
-                        input: "border-none focus:outline-none focus:ring-0",
+                        input: "text-xl border-none focus:outline-none focus:ring-0 pb-0 pl-0 text-black",
                     }}
                     defaultValue={diagnosisData?.patientName || ''}
                 />
@@ -101,7 +101,7 @@ const EditDiagnosisForm = ({ id }) => {
                     maxLength={9}
                     classNames={{
                         label: "text-lg text-black",
-                        input: "border-none focus:outline-none focus:ring-0",
+                        input: "text-xl border-none focus:outline-none focus:ring-0 pb-0 pl-0 text-black",
                     }}
                     defaultValue={diagnosisData?.patientID || ''}
                 />
@@ -162,7 +162,7 @@ const EditDiagnosisForm = ({ id }) => {
                     variant="bordered"
                     classNames={{
                         label: "text-lg text-black",
-                        input: "border-none focus:outline-none focus:ring-0",
+                        input: "text-xl border-none focus:outline-none focus:ring-0 pb-0 pl-0 text-black",
                     }}
                     defaultValue={diagnosisData?.DiagnosisFillerName || ''}
                 />
