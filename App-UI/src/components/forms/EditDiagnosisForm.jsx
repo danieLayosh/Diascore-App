@@ -78,6 +78,7 @@ const EditDiagnosisForm = ({ id }) => {
                 validationBehavior="native"
                 id="edit-diagnosis-form"
             >
+                <input type="hidden" name="documentId" value={id} />
                 <Input
                     isRequired
                     className="max-w-[220px]"
