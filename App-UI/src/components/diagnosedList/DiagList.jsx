@@ -21,7 +21,7 @@ import { ConfirmDelete } from '../modal/ConfirmDelete';
 import { GoGear } from "react-icons/go";
 import { OmrOrLink } from '../modal/OmrOrLink';
 import { OmrModal } from '../modal/OmrModal';
-import { omrRequest } from '../../api/omr_utils';
+import { omrRequest } from '../../api/omr_requests';
 import { updateAnswersArray, updateDiagnosisStatus } from '../../firebase/firestore/diagnoses';
 
 const statusColorMap = {
