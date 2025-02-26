@@ -31,28 +31,24 @@ export const addNewDiagnosticData = async (diagnosticData) => {
 
 export const checkDiagnosisDataExists = async (uuid) => {
     console.log("Checking if diagnosis data exists:", uuid);
-    try {
-        const user = auth.currentUser;
-        if (!user) {
-            throw new Error("No authenticated user found");
-        }
 
-        // Access the specific user's document
-        const userDocRef = doc(firestore, "Users", user.uid);
-        const userDoc = await getDoc(userDocRef);
-
-        if (!userDoc.exists()) {
-            throw new Error("No user data found for the authenticated user: ${user.uid}");
-        }
-        // Access the Diagnoses sub-collection for the specific user
-        const diagCollectionRef = collection(userDocRef, "Diagnoses");
-
-        const diagSnapshot = await getDoc(doc(diagCollectionRef, uuid));
-        return diagSnapshot.exists();
-    } catch (error) {
-        console.error("Error checking if diagnosis data exists:", error);
-        throw error;
+    const user = auth.currentUser;
+    if (!user) {
+        throw new Error("No authenticated user found");
     }
+    
+    // Access the specific user's document
+    const userDocRef = doc(firestore, "Users", user.uid);
+    const userDoc = await getDoc(userDocRef);
+    if (!userDoc.exists()) {
+        throw new Error("No user data found for the authenticated user: ${user.uid}");
+    }
+
+    // Access the Diagnoses sub-collection for the specific user
+    const diagCollectionRef = collection(userDocRef, "Diagnoses");
+    const diagSnapshot = await getDoc(doc(diagCollectionRef, uuid));
+    return diagSnapshot.exists();
+
 };
 
 export const updateDiagnosticData = async (diagnosticData) => {
