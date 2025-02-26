@@ -10,7 +10,7 @@ import { DiagList } from "../components/diagnosedList/DiagList";
 import Loader from "../components/Loader"; 
 import Action from "../components/dropdown/Action";
 import { firestore } from "../firebase/firebase";
-import { getFirestore, collection, doc, getDoc, getDocs, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 
 const Home = () => {
     const { user, loading } = useAuth();

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 { /* <NewDiagnosisForm /> 
  This is the form that will be used to create a new diagnosis. It will contain the following fields:
  - Patient Name
