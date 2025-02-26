@@ -148,3 +148,86 @@ export const deleteDiagnosticData = async (id) => {
         throw error;
     }
 };
+
+
+export const updateAnswersArray = async (documentId, updatedAnswers) => {
+    console.log("Updating answers array for document:", documentId);
+
+    try {
+        const user = auth.currentUser;
+        if (!user) {
+            throw new Error("No authenticated user found");
+        }
+
+        // Access the specific user's document
+        const userDocRef = doc(firestore, "Users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (!userDoc.exists()) {
+            throw new Error(`No user data found for the authenticated user: ${user.uid}`);
+        }
+
+        // Reference to the specific diagnosis document inside Diagnoses collection
+        const diagDocRef = doc(userDocRef, "Diagnoses", documentId);
+
+        const diagSnapshot = await getDoc(diagDocRef);
+
+        if (!diagSnapshot.exists()) {
+            throw new Error(`No diagnostic data found for the document ID: ${documentId}`);
+        }
+
+        // Update the answers array
+        await updateDoc(diagDocRef, {
+            answers: updatedAnswers,
+        });
+
+        console.log(`Answers array successfully updated for document ID: ${documentId}`);
+        
+        // Returning the updated data
+        return { id: documentId, answers: updatedAnswers };
+    } catch (error) {
+        console.error("Error updating answers array:", error);
+        throw error;
+    }
+};
+
+
+export const updateDiagnosisStatus = async (diagnosisId, newStatus) => {
+    console.log("Updating diagnosis status:", diagnosisId, newStatus);
+    try {
+        const user = auth.currentUser;
+        if (!user) {
+            throw new Error("No authenticated user found");
+        }
+
+        // Access the specific user's document
+        const userDocRef = doc(firestore, "Users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (!userDoc.exists()) {
+            throw new Error(`No user data found for the authenticated user: ${user.uid}`);
+        }
+
+        // Reference to the specific diagnosis document inside Diagnoses collection
+        const diagDocRef = doc(userDocRef, "Diagnoses", diagnosisId);
+
+        const diagSnapshot = await getDoc(diagDocRef);
+
+        if (!diagSnapshot.exists()) {
+            throw new Error(`No diagnostic data found for the document ID: ${diagnosisId}`);
+        }
+
+        // Update the status
+        await updateDoc(diagDocRef, {
+            status: newStatus,
+        });
+
+        console.log(`Diagnosis status successfully updated for document ID: ${diagnosisId}`);
+        
+        // Returning the updated data
+        return { id: diagnosisId, status: newStatus };
+    } catch (error) {
+        console.error("Error updating diagnosis status:", error);
+        throw error;
+    }
+};
