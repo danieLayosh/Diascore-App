@@ -34,7 +34,7 @@ def process_all_scores(request: AnswerSumRuqestWithCred) -> processrequestDone:
         res_dict = convert_scores_school(scores, total_df, indexes_df, scale_df)
     
     result = processrequestDone(
-        **request.model_dump(),
+        # **request.model_dump(),
         converted_scores=res_dict
     )
     
