@@ -4,13 +4,13 @@ from pydantic import ValidationError
 
 def validate_request_params(request: AnswerSumRequest) -> bool:
     
-    # Check if name is not empty
-    if not request.name:
-        raise HTTPException(status_code=400, detail="Name is required")
+    # # Check if name is not empty
+    # if not request.name:
+    #     raise HTTPException(status_code=400, detail="Name is required")
     
-    # Check if id is not 9 digits
-    if len(request.id) != 9:
-        raise HTTPException(status_code=400, detail="ID must be 9 digits")
+    # # Check if id is not 9 digits
+    # if len(request.id) != 9:
+    #     raise HTTPException(status_code=400, detail="ID must be 9 digits")
     
     # Check if gender is, girl or boy
     if request.gender.lower() not in ["boy", "girl"]:
@@ -20,17 +20,17 @@ def validate_request_params(request: AnswerSumRequest) -> bool:
     if request.age < 2.0 or request.age >= 19.0:
         raise HTTPException(status_code=400, detail="Age not supported, must be between 2 and 18")
 
-    # Check if birth_date is in the correct format
-    if len(request.birth_date) != 10:
-        raise HTTPException(status_code=400, detail="Birth date must be in the format 'YYYY-MM-DD'")
+    # # Check if birth_date is in the correct format
+    # if len(request.birth_date) != 10:
+    #     raise HTTPException(status_code=400, detail="Birth date must be in the format 'YYYY-MM-DD'")
     
-    # Check if text_filler_name is not empty
-    if not request.text_filler_name:
-        raise HTTPException(status_code=400, detail="Text filler name is required")
+    # # Check if text_filler_name is not empty
+    # if not request.text_filler_name:
+    #     raise HTTPException(status_code=400, detail="Text filler name is required")
     
-    # Check if date is in the correct format
-    if len(request.date) != 10:
-        raise HTTPException(status_code=400, detail="Date must be in the format 'YYYY-MM-DD'")
+    # # Check if date is in the correct format
+    # if len(request.date) != 10:
+    #     raise HTTPException(status_code=400, detail="Date must be in the format 'YYYY-MM-DD'")
     
     # Check if pORt is 'p' or 't'
     if request.pORt.lower() not in ["p", "t"]:
