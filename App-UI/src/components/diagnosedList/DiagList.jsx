@@ -22,7 +22,8 @@ import { GoGear } from "react-icons/go";
 import { OmrOrLink } from '../modal/OmrOrLink';
 import { OmrModal } from '../modal/OmrModal';
 import { omrRequest } from '../../api/omr_requests';
-import { updateAnswersArray, updateDiagnosisStatus } from '../../firebase/firestore/diagnoses';
+import { mainRequest } from '../../api/main_requests';
+import { updateAnswersArray, updateDiagnosisStatus, getDiagnosticDataByUUID, uploadJsonToDiagnosis } from '../../firebase/firestore/diagnoses';
 
 const statusColorMap = {
   COMPLETED: "success",
@@ -97,9 +98,84 @@ export const DiagList = ({ Diagnoses }) => {
 
       await updateAnswersArray(diagnosisId, response.answers);
       await updateDiagnosisStatus(diagnosisId, "READY");
+      await handleCalculateScores(diagnosisToProcess);
     }
     handleOmeModalClose();
   };
+
+  const handleCalculateScores = async (diagnosis) => {
+    try {
+      // Get diagnostic data by UUID
+      const data = await getDiagnosticDataByUUID(diagnosis.id);
+      console.log("Main API response:", data);
+  
+      if (data) {
+        // Ensure dates are in a proper format
+        const birthDateStr = data.birthDate.trim();
+        const diagnosisDateStr = data.diagnosisDate.trim();
+  
+        // Check if the dates are empty
+        if (!birthDateStr || !diagnosisDateStr) {
+          console.error("Empty birthDate or diagnosisDate:", birthDateStr, diagnosisDateStr);
+          return;
+        }
+  
+        const birthDate = new Date(birthDateStr);
+        const diagnosisDate = new Date(diagnosisDateStr);
+  
+        // Check if the date conversion was successful
+        if (isNaN(birthDate.getTime()) || isNaN(diagnosisDate.getTime())) {
+          console.error("Invalid date format:", birthDateStr, diagnosisDateStr);
+          return;
+        }
+  
+        console.log("Calculated birthDate:", birthDate, "diagnosisDate:", diagnosisDate);
+  
+        // Calculate total months difference
+        const totalMonths = (diagnosisDate.getFullYear() - birthDate.getFullYear()) * 12 +
+                            (diagnosisDate.getMonth() - birthDate.getMonth());
+  
+        // Convert to decimal years (e.g., 5.5 for 5 years, 5 months)
+        const age = (totalMonths / 12).toFixed(1); // Keep one decimal place
+        console.log("Calculated age in years:", age);
+  
+        // Send data to the main API
+        const response_main = await mainRequest(data.gender, age, data.filler, data.type, data.answers);
+        console.log('Main API response:', response_main);
+  
+      // Check if 'converted_scores' exists in the response
+      if (response_main.converted_scores) {
+        const { converted_scores } = response_main;
+
+        // Dynamically create scoresData from the converted_scores
+        const scoresData = {};
+        
+        // Loop through the converted_scores and add them to scoresData
+        for (const key in converted_scores) {
+          // Use Object.prototype.hasOwnProperty.call() to avoid prototype warning
+          if (Object.prototype.hasOwnProperty.call(converted_scores, key)) {
+            scoresData[key] = converted_scores[key];
+          }
+        }
+
+        console.log("Formatted scores data:", scoresData);
+        // If the response contains 'converted_scores', upload JSON and update diagnosis status
+        await uploadJsonToDiagnosis(diagnosis.id, scoresData);
+        await updateDiagnosisStatus(diagnosis.id, "COMPLETED");
+      } else {
+        console.error("Main API did not return valid scores:", response_main);
+      }
+
+    } else {
+      console.error("No diagnostic data found for the provided diagnosis ID.");
+    }
+
+  } catch (error) {
+    // Catch and log any errors that occur in the try block
+    console.error("Error in handleCalculateScores:", error);
+  }
+};
+  
 
   const renderCell = useCallback((user, columnKey) => {
     const cellValue = user[columnKey];
