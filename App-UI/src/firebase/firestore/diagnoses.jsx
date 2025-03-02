@@ -231,3 +231,40 @@ export const updateDiagnosisStatus = async (diagnosisId, newStatus) => {
         throw error;
     }
 };
+
+
+export const uploadJsonToDiagnosis = async (diagnosisId, scores) => {
+    console.log("Uploading JSON to diagnosis:", diagnosisId);
+    try {
+        const user = auth.currentUser;
+        if (!user) {
+            throw new Error("No authenticated user found");
+        }
+
+        // Access the specific user's document
+        const userDocRef = doc(firestore, "Users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (!userDoc.exists()) {
+            throw new Error(`No user data found for the authenticated user: ${user.uid}`);
+        }
+
+        // Reference to the specific diagnosis document inside Diagnoses collection
+        const diagDocRef = doc(userDocRef, "Diagnoses", diagnosisId);
+        const diagSnapshot = await getDoc(diagDocRef);
+
+        if (!diagSnapshot.exists()) {
+            throw new Error(`No diagnostic data found for the document ID: ${diagnosisId}`);
+        }
+
+        // Update the diagnosis document with the uploaded JSON data
+        await updateDoc(diagDocRef, { scores });
+
+        console.log(`JSON successfully uploaded for diagnosis ID: ${diagnosisId}`);
+        
+        return { id: diagnosisId, scores };
+    } catch (error) {
+        console.error("Error uploading JSON to diagnosis:", error);
+        throw error;
+    }
+};
