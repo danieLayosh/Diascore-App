@@ -33,7 +33,7 @@ const statusColorMap = {
 
 export const DiagList = ({ Diagnoses }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedDiagnosis, setSelectedDiagnosis] = useState(null);
+  const [selectedDiagnosis, setSelectedDiagnosis] = useState(false);
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false); 
   const [diagnosisToDelete, setDiagnosisToDelete] = useState(null);
   const [isOmrOrLinkOpen, setIsOmrOrLinkOpen] = useState(false);  
