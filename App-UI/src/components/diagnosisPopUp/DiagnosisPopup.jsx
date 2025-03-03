@@ -41,7 +41,29 @@ const convertToList = (json) => {
   return [...otherScores, ...totalScore];
 };
 
+const convertToListDetails = (json) => {
+  if (!json) return [];
+
+  const scoresList = Object.entries(json).map(([key, value]) => {
+    if (key === 'scores' || key === 'answers' || key === 'id' || key ==="therapistID" || key ==="avatar" || key ==="patientName" ) return null;
+    const CapitalKey = capitalizeFullName(key);
+    const CapitalValue = capitalizeFullName(value)
+    return { key: CapitalKey, value: CapitalValue };
+  }).filter(item => item !== null); // Remove null values from the array
+
+
+  return scoresList;
+};
+
 export const DiagnosisPopup = ({ isOpen, onClose, diagnosis }) => {
+  // Determine if the filler is Parent or Teacher
+  const fillerLabel = diagnosis.filler === 'p' ? 'Parent' : (diagnosis.filler === 't' ? 'Teacher' : '');
+  if (diagnosis.filler === 'p') {
+    diagnosis.filler = 'Parent';
+  } else if (diagnosis.filler === 't') {
+    diagnosis.filler = 'Teacher';
+  }
+
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg" centered>
@@ -63,6 +85,9 @@ export const DiagnosisPopup = ({ isOpen, onClose, diagnosis }) => {
                     <p className={`text-small text-${statusColorMap[diagnosis.status] || "default-500"}`}>
                       {diagnosis.status}
                     </p>
+                    {fillerLabel && (
+                      <p className="text-small text-gray-600">{fillerLabel}</p> 
+                    )}
                   </div>
                 </CardHeader>
                 <Divider />
@@ -71,6 +96,7 @@ export const DiagnosisPopup = ({ isOpen, onClose, diagnosis }) => {
                     const isTotal = score.key === 'Total'; // Check if it's the Total score
                     return (
                       <div key={index}>
+                        {isTotal ? <Divider /> : <></>}
                         <div
                           style={{
                             display: 'flex',
@@ -107,11 +133,32 @@ export const DiagnosisPopup = ({ isOpen, onClose, diagnosis }) => {
                     <p className={`text-small text-${statusColorMap[diagnosis.status] || "default-500"}`}>
                       {diagnosis.status}
                     </p>
+                    {fillerLabel && (
+                      <p className="text-small text-gray-600">{fillerLabel}</p> 
+                    )}
                   </div>
                 </CardHeader>
                 <Divider />
                 <CardBody>
-                  <p className="text-sm text-default-700">Diagnostic scores</p>
+                  {convertToListDetails(diagnosis).map((propertie, index) => {
+                    return (
+                      <div key={index}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '8px',
+                          }}
+                        >
+                          <p>{propertie.key}</p>
+                          <p>{propertie.value}</p>
+                        </div>
+                        {/* Add divider only if it's not the last propertie */}
+                        {index < convertToListDetails(diagnosis).length - 1 && <Divider />}
+                      </div>
+                    );
+                  })}
                 </CardBody>
               </Card>
             </Tab>
@@ -131,5 +178,6 @@ DiagnosisPopup.propTypes = {
     status: PropTypes.string,
     avatar: PropTypes.string,
     scores: PropTypes.object,
+    filler: PropTypes.string,
   }),
 };
