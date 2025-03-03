@@ -132,9 +132,9 @@ export default function ActionNewDiagnosis() {
       formDataObj["status"] = "PENDING";
 
       if (formDataObj["gender"] === "boy") {
-        formDataObj["avatar"] = "public/avatars/boy_avatar.jpg"
+        formDataObj["avatar"] = "/avatars/boy_avatar.jpg"
       } else if (formDataObj["gender"] === "girl") {
-        formDataObj["avatar"] = "public/avatars/girl_avatar.jpg"
+        formDataObj["avatar"] = "/avatars/girl_avatar.jpg"
       }
         
       if (formDataObj["patientID"] !== "") {
