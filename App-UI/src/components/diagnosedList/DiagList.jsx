@@ -257,7 +257,7 @@ export const DiagList = ({ Diagnoses }) => {
         </TableBody>
       </Table>
 
-      <DiagnosisPopup isOpen={isOpen} onClose={onClose} diagnosis={selectedDiagnosis} />
+      <DiagnosisPopup isOpen={isOpen} onClose={onClose} diagnosis={selectedDiagnosis || {}} />
 
       <ConfirmDelete 
         isOpen={confirmDeleteOpen} 
