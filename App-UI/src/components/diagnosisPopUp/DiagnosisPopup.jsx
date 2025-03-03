@@ -4,13 +4,13 @@ import {
   ModalBody,
   Image,
   Divider,
-  Tabs,
-  Tab,
   Card,
   CardHeader,
   CardBody,
+  Button,
 } from "@heroui/react";
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 
 const capitalizeFullName = (fullName) => {
   if (!fullName) return ''; // Return an empty string if fullName is undefined or null
@@ -51,11 +51,12 @@ const convertToListDetails = (json) => {
     return { key: CapitalKey, value: CapitalValue };
   }).filter(item => item !== null); // Remove null values from the array
 
-
   return scoresList;
 };
 
 export const DiagnosisPopup = ({ isOpen, onClose, diagnosis }) => {
+  const [showDetailsCard, setShowDetailsCard] = useState(false); // State to control the details card visibility
+
   // Determine if the filler is Parent or Teacher
   const fillerLabel = diagnosis.filler === 'p' ? 'Parent' : (diagnosis.filler === 't' ? 'Teacher' : '');
   if (diagnosis.filler === 'p') {
@@ -64,105 +65,107 @@ export const DiagnosisPopup = ({ isOpen, onClose, diagnosis }) => {
     diagnosis.filler = 'Teacher';
   }
 
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg" centered="true" scrollBehavior="inside" >
       <ModalContent>
         <ModalBody>
-          <Tabs aria-label="Options" className="flex justify-center items-start" onBlur={onClose}>
-            <Tab key="scores" title="Scores">
-              <Card className="max-w-[400px] bg-transparent shadow-none border-none" >
-                <CardHeader className="flex gap-3">
-                  <Image
-                    alt="avatar"
-                    height={40}
-                    radius="sm"
-                    src={diagnosis.avatar}
-                    width={40}
-                  />
-                  <div className="flex flex-col">
-                    <p className="text-md ">{capitalizeFullName(diagnosis.patientName)}</p>
-                    <p className={`text-small text-${statusColorMap[diagnosis.status] || "default-500"}`}>
-                      {diagnosis.status}
-                    </p>
-                    {fillerLabel && (
-                      <p className="text-small text-gray-600">{fillerLabel}</p> 
-                    )}
+          <Card className="max-w-[400px] bg-transparent shadow-none border-none" >
+            <CardHeader className="flex gap-3">
+              <Image
+                alt="avatar"
+                height={40}
+                radius="sm"
+                src={diagnosis.avatar}
+                width={40}
+              />
+              <div className="flex flex-col">
+                <p className="text-md ">{capitalizeFullName(diagnosis.patientName)}</p>
+                <p className={`text-small text-${statusColorMap[diagnosis.status] || "default-500"}`}>
+                  {diagnosis.status}
+                </p>
+                {fillerLabel && (
+                  <p className="text-small text-gray-600">{fillerLabel}</p> 
+                )}
+              </div>
+            </CardHeader>
+            <Divider />
+            <CardBody>
+              {convertToList(diagnosis.scores).map((score, index) => {
+                const isTotal = score.key === 'Total'; // Check if it's the Total score
+                return (
+                  <div key={index}>
+                    {isTotal ? <Divider /> : <></>}
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '8px',
+                        fontWeight: isTotal ? 'bold' : '500', // Make Total score bold
+                        color: isTotal ? '#FF5733' : '#000000', // Change color for Total score
+                      }}
+                    >
+                      <p>{score.key}</p>
+                      <p>{score.value}</p>
+                    </div>
+                    {/* Add divider only if it's not the last score */}
+                    {index < convertToList(diagnosis.scores).length - 1 && <Divider />}
                   </div>
-                </CardHeader>
-                <Divider />
-                <CardBody>
-                  {convertToList(diagnosis.scores).map((score, index) => {
-                    const isTotal = score.key === 'Total'; // Check if it's the Total score
-                    return (
-                      <div key={index}>
-                        {isTotal ? <Divider /> : <></>}
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            padding: '8px',
-                            fontWeight: isTotal ? 'bold' : '500', // Make Total score bold
-                            color: isTotal ? '#FF5733' : '#000000', // Change color for Total score
-                          }}
-                        >
-                          <p>{score.key}</p>
-                          <p>{score.value}</p>
+                );
+              })}
+
+              {/* Button to toggle the details card */}
+              <Button onClick={() => setShowDetailsCard(prevState => !prevState)} className="mt-4">
+                {showDetailsCard ? 'Hide Details' : 'Show Details'}
+              </Button>
+
+              {/* Display details card when showDetailsCard is true */}
+              {showDetailsCard && (
+                <Card className="mt-4 bg-transparent shadow-none border-none">
+                  <CardHeader className="flex gap-3">
+                    <Image
+                      alt="avatar"
+                      height={40}
+                      radius="sm"
+                      src={diagnosis.avatar}
+                      width={40}
+                    />
+                    <div className="flex flex-col">
+                      <p className="text-md ">{capitalizeFullName(diagnosis.patientName)}</p>
+                      <p className={`text-small text-${statusColorMap[diagnosis.status] || "default-500"}`}>
+                        {diagnosis.status}
+                      </p>
+                      {fillerLabel && (
+                        <p className="text-small text-gray-600">{fillerLabel}</p> 
+                      )}
+                    </div>
+                  </CardHeader>
+                  <Divider />
+                  <CardBody>
+                    {convertToListDetails(diagnosis).map((propertie, index) => {
+                      return (
+                        <div key={index}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              padding: '8px',
+                            }}
+                          >
+                            <p>{propertie.key}</p>
+                            <p>{propertie.value}</p>
+                          </div>
+                          {/* Add divider only if it's not the last propertie */}
+                          {index < convertToListDetails(diagnosis).length - 1 && <Divider />}
                         </div>
-                        {/* Add divider only if it's not the last score */}
-                        {index < convertToList(diagnosis.scores).length - 1 && <Divider />}
-                      </div>
-                    );
-                  })}
-                </CardBody>
-              </Card>
-            </Tab>
-            <Tab key="details" title="Details" onClose={onClose}>
-              <Card className="max-w-[400px] bg-transparent shadow-none border-none">
-                <CardHeader className="flex gap-3">
-                  <Image
-                    alt="avatar"
-                    height={40}
-                    radius="sm"
-                    src={diagnosis.avatar}
-                    width={40}
-                  />
-                  <div className="flex flex-col">
-                    <p className="text-md ">{capitalizeFullName(diagnosis.patientName)}</p>
-                    <p className={`text-small text-${statusColorMap[diagnosis.status] || "default-500"}`}>
-                      {diagnosis.status}
-                    </p>
-                    {fillerLabel && (
-                      <p className="text-small text-gray-600">{fillerLabel}</p> 
-                    )}
-                  </div>
-                </CardHeader>
-                <Divider />
-                <CardBody>
-                  {convertToListDetails(diagnosis).map((propertie, index) => {
-                    return (
-                      <div key={index}>
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            padding: '8px',
-                          }}
-                        >
-                          <p>{propertie.key}</p>
-                          <p>{propertie.value}</p>
-                        </div>
-                        {/* Add divider only if it's not the last propertie */}
-                        {index < convertToListDetails(diagnosis).length - 1 && <Divider />}
-                      </div>
-                    );
-                  })}
-                </CardBody>
-              </Card>
-            </Tab>
-          </Tabs>
+                      );
+                    })}
+                  </CardBody>
+                </Card>
+              )}
+            </CardBody>
+          </Card>
         </ModalBody>
       </ModalContent>
     </Modal>
@@ -173,12 +176,4 @@ DiagnosisPopup.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   diagnosis: PropTypes.object,
-  // diagnosis: PropTypes.shape({
-  //   patientName: PropTypes.string,
-  //   diagnosisDate: PropTypes.string,
-  //   status: PropTypes.string,
-  //   avatar: PropTypes.string,
-  //   scores: PropTypes.object,
-  //   filler: PropTypes.string,
-  // }),
 };
