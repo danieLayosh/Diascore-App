@@ -62,7 +62,6 @@ const EditDiagnosis = () => {
                 isOpen={confirmReturnOpen} 
                 onOpenChange={setConfirmReturnOpen} 
             />
-
         </div>
     );
 };
