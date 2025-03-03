@@ -1,68 +1,135 @@
 import {
   Modal,
   ModalContent,
-  ModalHeader,
   ModalBody,
-  ModalFooter,
-  Button,
+  Image,
+  Divider,
+  Tabs,
+  Tab,
+  Card,
+  CardHeader,
+  CardBody,
 } from "@heroui/react";
 import PropTypes from 'prop-types';
-import { capitalizeFirstLetter } from '../../utils';
 
-// Helper function to render array or object values
-const renderValue = (value) => {
-  if (Array.isArray(value)) {
-    // If it's an array, check if it's empty or not
-    return value.length > 0 ? "Filled" : "Empty";
-  } else if (typeof value === 'object' && value !== null) {
-    // If it's an object, show a message or inspect its keys
-    return "Filled";  // You can modify this to show more details about the object
-  }
-  return value;
+const capitalizeFullName = (fullName) => {
+  if (!fullName) return ''; // Return an empty string if fullName is undefined or null
+  const nameParts = fullName.split(' ');
+  return nameParts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+};
+
+const statusColorMap = {
+  COMPLETED: "success",
+  READY: "primary",
+  PENDING: "warning",
+};
+
+const convertToList = (json) => {
+  if (!json) return []; // Return an empty array if json is undefined or null
+  
+  const scoresList = Object.entries(json).map(([key, value]) => {
+    const cleanedKey = key.replace('_score', ''); // Remove '_score' from the key
+    const CapitalKey = capitalizeFullName(cleanedKey);
+    return { key: CapitalKey, value };
+  });
+
+  // Separate 'Total' score to be shown last
+  const totalScore = scoresList.filter(score => score.key === 'Total');
+  const otherScores = scoresList.filter(score => score.key !== 'Total');
+
+  // Combine the scores so that the 'Total' appears last
+  return [...otherScores, ...totalScore];
 };
 
 export const DiagnosisPopup = ({ isOpen, onClose, diagnosis }) => {
+
   return (
-    <Modal backdrop="blur" isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} size="lg" centered>
       <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-col gap-1">Diagnosis Details</ModalHeader>
-            <ModalBody>
-              {diagnosis ? (
-                <div>
-                  {Object.entries(diagnosis)
-                    .filter(([key]) => !["id", "avatar", "therapistID"].includes(key))
-                    .map(([key, value]) => (
-                      <p key={key}>
-                        <strong>{capitalizeFirstLetter(key)}:</strong>{" "}
-                        {renderValue(value)} {/* Render the value */}
-                      </p>
-                    ))}
-                </div>
-              ) : (
-                <p>Loading2...</p>
-              )}
-            </ModalBody>
-            <ModalFooter>
-              <Button color="danger" variant="light" onPress={onClose}>
-                Close
-              </Button>
-            </ModalFooter>
-          </>
-        )}
+        <ModalBody>
+          <Tabs aria-label="Options" className="flex justify-center items-start">
+            <Tab key="scores" title="Scores">
+              <Card className="max-w-[400px] bg-transparent shadow-none border-none">
+                <CardHeader className="flex gap-3">
+                  <Image
+                    alt="avatar"
+                    height={40}
+                    radius="sm"
+                    src={diagnosis.avatar}
+                    width={40}
+                  />
+                  <div className="flex flex-col">
+                    <p className="text-md ">{capitalizeFullName(diagnosis.patientName)}</p>
+                    <p className={`text-small text-${statusColorMap[diagnosis.status] || "default-500"}`}>
+                      {diagnosis.status}
+                    </p>
+                  </div>
+                </CardHeader>
+                <Divider />
+                <CardBody>
+                  {convertToList(diagnosis.scores).map((score, index) => {
+                    const isTotal = score.key === 'Total'; // Check if it's the Total score
+                    return (
+                      <div key={index}>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '8px',
+                            fontWeight: isTotal ? 'bold' : '500', // Make Total score bold
+                            color: isTotal ? '#FF5733' : '#000000', // Change color for Total score
+                          }}
+                        >
+                          <p>{score.key}</p>
+                          <p>{score.value}</p>
+                        </div>
+                        {/* Add divider only if it's not the last score */}
+                        {index < convertToList(diagnosis.scores).length - 1 && <Divider />}
+                      </div>
+                    );
+                  })}
+                </CardBody>
+              </Card>
+            </Tab>
+            <Tab key="details" title="Details">
+              <Card className="max-w-[400px] bg-transparent shadow-none border-none">
+                <CardHeader className="flex gap-3">
+                  <Image
+                    alt="avatar"
+                    height={40}
+                    radius="sm"
+                    src={diagnosis.avatar}
+                    width={40}
+                  />
+                  <div className="flex flex-col">
+                    <p className="text-md ">{capitalizeFullName(diagnosis.patientName)}</p>
+                    <p className={`text-small text-${statusColorMap[diagnosis.status] || "default-500"}`}>
+                      {diagnosis.status}
+                    </p>
+                  </div>
+                </CardHeader>
+                <Divider />
+                <CardBody>
+                  <p className="text-sm text-default-700">Diagnostic scores</p>
+                </CardBody>
+              </Card>
+            </Tab>
+          </Tabs>
+        </ModalBody>
       </ModalContent>
     </Modal>
   );
 };
 
 DiagnosisPopup.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    diagnosis: PropTypes.shape({
-        patientName: PropTypes.string,
-        diagnosisDate: PropTypes.string,
-        status: PropTypes.string,
-    }),
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  diagnosis: PropTypes.shape({
+    patientName: PropTypes.string,
+    diagnosisDate: PropTypes.string,
+    status: PropTypes.string,
+    avatar: PropTypes.string,
+    scores: PropTypes.object,
+  }),
 };
-  
