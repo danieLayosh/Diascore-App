@@ -34,7 +34,7 @@ const NewDiagnosis = () => {
         <div className="flex flex-col items-start bg-gradient-bg text-text-light min-h-screen">
             {/* Header Section */}
             <div className="flex justify-between items-center w-full px-4 sm:px-12 lg:px-12 py-4 bg-card-bg shadow-lg">
-                <h3 className="text-5xl sm:text-6xl font-island-moments text-primary-color font-semibold">Diascore</h3>
+                <h3 className="text-5xl sm:text-6xl font-island-moments text-primary-color font-semibold" onClick={() => {navigate('/Home')}}>Diascore</h3>
                 <div className="flex gap-6">
                     <ActionNewDiagnosis />
                     <ProfileButton 
