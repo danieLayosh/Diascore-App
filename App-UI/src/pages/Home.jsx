@@ -92,7 +92,7 @@ const Home = () => {
                 </div>
             </div>
 
-            <div className="text-left mx-auto justify-center items-center mt-60">
+            <div className="text-left mx-auto justify-center items-center mt-16 px-4 sm:max-w-screen-lg max-w-full">
                 <DiagList Diagnoses={(diagnoses)} />
             </div>
         </div>
