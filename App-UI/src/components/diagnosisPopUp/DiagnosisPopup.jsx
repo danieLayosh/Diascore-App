@@ -66,12 +66,12 @@ export const DiagnosisPopup = ({ isOpen, onClose, diagnosis }) => {
 
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="lg" centered>
+    <Modal isOpen={isOpen} onClose={onClose} size="lg" centered="true" scrollBehavior="inside" >
       <ModalContent>
         <ModalBody>
-          <Tabs aria-label="Options" className="flex justify-center items-start">
+          <Tabs aria-label="Options" className="flex justify-center items-start" onBlur={onClose}>
             <Tab key="scores" title="Scores">
-              <Card className="max-w-[400px] bg-transparent shadow-none border-none">
+              <Card className="max-w-[400px] bg-transparent shadow-none border-none" >
                 <CardHeader className="flex gap-3">
                   <Image
                     alt="avatar"
@@ -118,7 +118,7 @@ export const DiagnosisPopup = ({ isOpen, onClose, diagnosis }) => {
                 </CardBody>
               </Card>
             </Tab>
-            <Tab key="details" title="Details">
+            <Tab key="details" title="Details" onClose={onClose}>
               <Card className="max-w-[400px] bg-transparent shadow-none border-none">
                 <CardHeader className="flex gap-3">
                   <Image
@@ -172,12 +172,13 @@ export const DiagnosisPopup = ({ isOpen, onClose, diagnosis }) => {
 DiagnosisPopup.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  diagnosis: PropTypes.shape({
-    patientName: PropTypes.string,
-    diagnosisDate: PropTypes.string,
-    status: PropTypes.string,
-    avatar: PropTypes.string,
-    scores: PropTypes.object,
-    filler: PropTypes.string,
-  }),
+  diagnosis: PropTypes.object,
+  // diagnosis: PropTypes.shape({
+  //   patientName: PropTypes.string,
+  //   diagnosisDate: PropTypes.string,
+  //   status: PropTypes.string,
+  //   avatar: PropTypes.string,
+  //   scores: PropTypes.object,
+  //   filler: PropTypes.string,
+  // }),
 };
