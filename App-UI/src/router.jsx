@@ -4,6 +4,7 @@ import PublicRoute from './components/routes/PublicRoute';
 import appRoutes from './data/routes';
 import PageNotFound from './pages/404Page';
 import Welcome from './pages/Welcome'; 
+import { DiagnosisTest } from './pages/Diagnosis/DiagnosisTest';
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
       {
         path: '/welcome',
         element: <Welcome />,
+      },
+      {
+        path: "/diagnosis/test/:linkId",
+        element: <DiagnosisTest />,
       },
     ],
   },
