@@ -1,4 +1,4 @@
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, getDoc } from "firebase/firestore";
 import { auth, firestore } from "../firebase"; 
 import { v4 as uuidv4 } from "uuid";
 import { getDiagnosticDataByUUID } from "./diagnoses";
@@ -37,6 +37,27 @@ export const generateNewLinkTest = async (userId, diagnosisId) => {
         return linkId;
     } catch (error) {
         console.error("Error generating new link:", error);
+        throw error;
+    }
+};
+
+
+export const getLinkData = async (linkId) => {
+    console.log("Getting link data for link:", linkId);
+
+    try {
+        const linkDocRef = doc(firestore, "Links", linkId);
+        const linkDoc = await getDoc(linkDocRef)
+
+        if (!linkDoc.exists()) {
+            throw new Error("Link not found");
+        }
+
+        const linkData = linkDoc.data();
+        console.log("Link data found:", linkData);
+        return linkData;
+    } catch (error) {
+        console.error("Error getting link data:", error);
         throw error;
     }
 };
