@@ -41,6 +41,8 @@ export const mainRequest = async (gender, age, pORt, kORs, answers) => {
 };
 
 export const getDiagnosisQuestions = async (kORs, pORt) => {
+  console.log("getDiagnosisQuestions", kORs, pORt);
+
   const apiKey = import.meta.env.VITE_MAIN_LOGIC_KEY;
   let url = import.meta.env.VITE_MAIN_API_URL;
   if (kORs === "kids" || kORs === "school" && pORt === "p" || pORt === "t") {
