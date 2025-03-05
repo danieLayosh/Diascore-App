@@ -125,7 +125,7 @@ export const DiagnosisPopup = ({ isOpen, onClose, diagnosis }) => {
                   );
                 })}
                 {/* Button to open the details modal */}
-                <Button onClick={handleOpenDetailsModal} className="mt-4">View Details</Button>
+                <Button onPress={handleOpenDetailsModal} className="mt-4">View Details</Button>
               </CardBody>
             </Card>
           </ModalBody>
