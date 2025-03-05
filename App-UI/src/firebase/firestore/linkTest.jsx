@@ -1,6 +1,7 @@
 import { setDoc, doc } from "firebase/firestore";
 import { auth, firestore } from "../firebase"; 
 import { v4 as uuidv4 } from "uuid";
+import { getDiagnosticDataByUUID } from "./diagnoses";
 
 export const generateNewLinkTest = async (userId, diagnosisId) => {
     console.log("Generating new link for user:", userId, "and diagnosis:", diagnosisId);
@@ -8,7 +9,10 @@ export const generateNewLinkTest = async (userId, diagnosisId) => {
     const linkId = uuidv4();
     const expirationDate = new Date();
     expirationDate.setDate(expirationDate.getDate() + 14);
-    
+    const diagnosticData = await getDiagnosticDataByUUID(diagnosisId);
+    const kORs = diagnosticData.type;
+    const pORt = diagnosticData.filler;
+
     try {
         const user = auth.currentUser;
         if (!user) {
@@ -23,6 +27,8 @@ export const generateNewLinkTest = async (userId, diagnosisId) => {
             expirationDate: expirationDate,
             submitted: false,
             createdAt: new Date(),
+            kORs: kORs,
+            pORt: pORt,
         };
 
         await setDoc(linkDocRef, data);
