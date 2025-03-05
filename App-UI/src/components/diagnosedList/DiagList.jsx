@@ -24,6 +24,7 @@ import { OmrModal } from '../modal/OmrModal';
 import { omrRequest } from '../../api/omr_requests';
 import { mainRequest } from '../../api/main_requests';
 import { updateAnswersArray, updateDiagnosisStatus, getDiagnosticDataByUUID, uploadJsonToDiagnosis } from '../../firebase/firestore/diagnoses';
+import { generateNewLinkTest } from '../../firebase/firestore/linkTest';
 
 const statusColorMap = {
   COMPLETED: "success",
@@ -49,7 +50,7 @@ export const DiagList = ({ Diagnoses }) => {
 
   const handleEditClick = (diagnosis) => {
     setSelectedDiagnosis(diagnosis);
-    const id = diagnosis.id;  // Assuming diagnosis has an 'id' field
+    const id = diagnosis.id;  
     navigate(`/diagnosis/edit/${id}`);
   };
 
@@ -70,10 +71,22 @@ export const DiagList = ({ Diagnoses }) => {
     setIsOmrOrLinkOpen(true);
   };
 
-  const handleOmrOrLinkConfirm = (choice) => {
+  const handleOmrOrLinkConfirm = async (choice) => {
     setIsOmrOrLinkOpen(false);
     if (choice === "OMR") {
       handleOmrModalOpen();
+    } else {
+      if (choice === "Link") {
+        // Generate a new Link for the diagnosis test
+        if (diagnosisToProcess) {
+          const linkId = await generateNewLinkTest(diagnosisToProcess.therapistID, diagnosisToProcess.id);
+          
+          if (linkId) {
+            const linkUrl = `${window.location.origin}/diagnosis/test/${linkId}`;
+            console.log("Link URL:", linkUrl);
+          }
+        }
+      }
     }
   };
 
@@ -81,13 +94,12 @@ export const DiagList = ({ Diagnoses }) => {
     setIsOmrOpen(!isOmrOpen);
   };
 
-  const handleOmeModalClose = () => {
+  const handleOmrModalClose = () => {
     setIsOmrOpen(false);
   };
 
   const handleModalFormSubmit = async (formData) => {
     console.log('Form submitted with data:', formData);
-
 
     if (diagnosisToProcess) {
       const diagnosisId = diagnosisToProcess.id;
@@ -100,8 +112,9 @@ export const DiagList = ({ Diagnoses }) => {
       await updateDiagnosisStatus(diagnosisId, "READY");
       await handleCalculateScores(diagnosisToProcess);
     }
-    handleOmeModalClose();
+    handleOmrModalClose();
   };
+
 
   const handleCalculateScores = async (diagnosis) => {
     try {
