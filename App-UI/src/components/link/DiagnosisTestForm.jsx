@@ -74,6 +74,8 @@ export const DiagnosisTestForm = ({ linkId }) => {
     
         // Process the converted answers (e.g., send them to a server)
         console.log("Submitted Answers (Converted):", convertedAnswers);
+
+
     
         // Example: Send answers to an API
         // submitAnswers({ linkId, answers: convertedAnswers }).then(response => console.log(response));
@@ -85,6 +87,7 @@ export const DiagnosisTestForm = ({ linkId }) => {
     if (loading) return <div className="text-center text-lg">Loading...</div>;
     if (error) return <div className="text-center text-red-500">{error}</div>;
     if (linkData === null) return <div className="text-center"><p>Link data not found</p></div>;
+    if (linkData !== null && linkData.submitted === true) return <div className="text-center"><p>This link has expired or has already been submitted.</p></div>;
     if (questions === null) return <div className="text-center"><p>Loading questions...</p></div>;
 
     const question = questions[currentIndex];
