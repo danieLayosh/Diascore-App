@@ -45,7 +45,7 @@ const convertToListDetails = (json) => {
   if (!json) return [];
 
   const scoresList = Object.entries(json).map(([key, value]) => {
-    if (key === 'scores' || key === 'answers' || key === 'id' || key ==="therapistID" || key ==="avatar" || key ==="patientName" ) return null;
+    if (key === 'scores' || key === 'answers' || key === 'id' || key ==="therapistID" || key ==="avatar" || key ==="patientName" || key ==="status") return null;
     const CapitalKey = capitalizeFullName(key);
     const CapitalValue = capitalizeFullName(value)
     return { key: CapitalKey, value: CapitalValue };
