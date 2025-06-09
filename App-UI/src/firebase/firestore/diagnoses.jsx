@@ -279,7 +279,7 @@ export const updateDiagnosisWithTestAnswers = async (userId, diagnosisId, answer
         const updateData = {
             answers: answers,
             lastUpdated: new Date(),
-            status: "completed",
+            status: "COMPLETED",
             linkId: linkId,
             secretToken: secretToken
         };
