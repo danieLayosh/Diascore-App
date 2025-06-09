@@ -1,4 +1,4 @@
-import { collection, updateDoc, getDoc, addDoc, doc, deleteDoc, setDoc } from "firebase/firestore";
+import { collection, updateDoc, getDoc, addDoc, doc, deleteDoc } from "firebase/firestore";
 import { auth, firestore } from "../firebase"; 
 
 export const addNewDiagnosticData = async (diagnosticData) => {
@@ -270,11 +270,12 @@ export const uploadJsonToDiagnosis = async (diagnosisId, scores) => {
 };
 
 export const updateDiagnosisWithTestAnswers = async (userId, diagnosisId, answers, linkId, secretToken) => {
-    console.log("Updating diagnosis with test answers:", { userId, diagnosisId });
+    console.log("Updating diagnosis with test answers:", { userId, diagnosisId, linkId });
 
     try {
         const diagnosisDocRef = doc(firestore, "Users", userId, "Diagnoses", diagnosisId);
         
+        // Update only the specific fields we need
         const updateData = {
             answers: answers,
             lastUpdated: new Date(),
@@ -283,7 +284,8 @@ export const updateDiagnosisWithTestAnswers = async (userId, diagnosisId, answer
             secretToken: secretToken
         };
 
-        await setDoc(diagnosisDocRef, updateData, { merge: true });
+        // Use updateDoc instead of setDoc to only update specific fields
+        await updateDoc(diagnosisDocRef, updateData);
         console.log("Diagnosis updated successfully with test answers");
     } catch (error) {
         console.error("Error updating diagnosis with test answers:", error);

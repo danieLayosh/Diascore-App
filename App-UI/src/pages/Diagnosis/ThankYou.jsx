@@ -17,3 +17,5 @@ export const ThankYou = () => {
         </div>
     );
 }; 
+
+// TODO send mail to the user that the diagnosis is completed

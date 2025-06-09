@@ -21,11 +21,12 @@ service cloud.firestore {
       // Allow updates from a valid link
       allow update: if request.auth != null && request.auth.uid == userId
         || (request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['answers', 'lastUpdated', 'status'])
+            .hasOnly(['answers', 'lastUpdated', 'status', 'linkId', 'secretToken'])
+            && request.resource.data.linkId is string
+            && request.resource.data.secretToken is string
             && exists(/databases/$(database)/documents/Links/$(request.resource.data.linkId))
             && get(/databases/$(database)/documents/Links/$(request.resource.data.linkId)).data.secretToken == request.resource.data.secretToken
-            && !get(/databases/$(database)/documents/Links/$(request.resource.data.linkId)).data.submitted
-            && get(/databases/$(database)/documents/Links/$(request.resource.data.linkId)).data.expirationDate > request.time);
+            && get(/databases/$(database)/documents/Links/$(request.resource.data.linkId)).data.diagnosisId == diagnosisId);
     }
     
     match /Links/{linkId} {
