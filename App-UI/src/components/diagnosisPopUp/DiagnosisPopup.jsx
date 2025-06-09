@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 
 const capitalizeFullName = (fullName) => {
-  if (!fullName) return ''; // Return an empty string if fullName is undefined or null
+  if (typeof fullName !== 'string') return '';
   const nameParts = fullName.split(' ');
   return nameParts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
 };
@@ -45,7 +45,7 @@ const convertToListDetails = (json) => {
   if (!json) return [];
 
   const scoresList = Object.entries(json).map(([key, value]) => {
-    if (key === 'scores' || key === 'answers' || key === 'id' || key ==="therapistID" || key ==="avatar" || key ==="patientName" || key ==="status") return null;
+    if (key === 'scores' || key === 'answers' || key === 'id' || key ==="therapistID" || key ==="avatar" || key ==="patientName" || key ==="status" || key ==="SecretToken" || key ==="LinkId") return null;
     const CapitalKey = capitalizeFullName(key);
     const CapitalValue = capitalizeFullName(value)
     return { key: CapitalKey, value: CapitalValue };
