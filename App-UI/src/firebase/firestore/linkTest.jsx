@@ -14,7 +14,7 @@ export const generateNewLinkTest = async (userId, diagnosisId) => {
     console.log("Generating new link for user:", userId, "and diagnosis:", diagnosisId);
 
     const linkId = uuidv4();
-    const secretToken = generateSecureToken(); // Use our browser-compatible function
+    const secretToken = generateSecureToken();
     const expirationDate = new Date();
     expirationDate.setDate(expirationDate.getDate() + 14);
     const diagnosticData = await getDiagnosticDataByUUID(diagnosisId);
@@ -41,6 +41,13 @@ export const generateNewLinkTest = async (userId, diagnosisId) => {
         };
 
         await setDoc(linkDocRef, data);
+
+        // Update the diagnosis document with linkId and secretToken
+        const diagnosisRef = doc(firestore, `Users/${userId}/Diagnoses/${diagnosisId}`);
+        await updateDoc(diagnosisRef, {
+            linkId,
+            secretToken
+        });
 
         console.log("New link generated:", linkId);
         return { linkId, secretToken };

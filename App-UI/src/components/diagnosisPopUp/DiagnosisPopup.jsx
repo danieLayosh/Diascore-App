@@ -45,12 +45,23 @@ const convertToListDetails = (json) => {
   if (!json) return [];
 
   const scoresList = Object.entries(json).map(([key, value]) => {
-    if (key === 'scores' || key === 'answers' || key === 'id' || key ==="therapistID" || key ==="avatar" || key ==="patientName" || key ==="status" || key ==="SecretToken" || key ==="LinkId") return null;
-    const CapitalKey = capitalizeFullName(key);
-    const CapitalValue = capitalizeFullName(value)
-    return { key: CapitalKey, value: CapitalValue };
-  }).filter(item => item !== null); // Remove null values from the array
+    if (
+      key === 'scores' || key === 'answers' || key === 'id' ||
+      key === 'therapistID' || key === 'avatar' || key === 'patientName' ||
+      key === 'status' || key === 'secretToken' || key === 'linkId'
+    ) return null;
 
+    let displayValue = value;
+    // Handle Firestore Timestamp
+    if (value && typeof value.toDate === 'function') {
+      displayValue = value.toDate().toLocaleString();
+    } else if (typeof value === 'string') {
+      displayValue = capitalizeFullName(value);
+    }
+
+    const CapitalKey = capitalizeFullName(key);
+    return { key: CapitalKey, value: displayValue };
+  }).filter(item => item !== null);
 
   return scoresList;
 };
@@ -100,7 +111,20 @@ export const DiagnosisPopup = ({ isOpen, onClose, diagnosis }) => {
               </CardHeader>
               <Divider />
               <CardBody>
-                <p>Scores</p>
+              <strong>Scores</strong>
+                {diagnosis.linkId && diagnosis.secretToken && (
+                  <div className="diagnosis-link mb-4">
+                    <p>Test Link: </p>
+                    <a
+                      href={`${window.location.origin}/diagnosis/test/${diagnosis.linkId}/${diagnosis.secretToken}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ wordBreak: 'break-all', color: '#2563eb' }}
+                    >
+                      {`${window.location.origin}/diagnosis/test/${diagnosis.linkId}/${diagnosis.secretToken}`}
+                    </a>
+                  </div>
+                )}
                 {convertToList(diagnosis.scores).map((score, index) => {
                   const isTotal = score.key === 'Total'; // Check if it's the Total score
                   return (
