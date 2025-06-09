@@ -1,4 +1,4 @@
-import { collection, updateDoc, getDoc, addDoc, doc, deleteDoc } from "firebase/firestore";
+import { collection, updateDoc, getDoc, addDoc, doc, deleteDoc, setDoc } from "firebase/firestore";
 import { auth, firestore } from "../firebase"; 
 
 export const addNewDiagnosticData = async (diagnosticData) => {
@@ -265,6 +265,28 @@ export const uploadJsonToDiagnosis = async (diagnosisId, scores) => {
         return { id: diagnosisId, scores };
     } catch (error) {
         console.error("Error uploading JSON to diagnosis:", error);
+        throw error;
+    }
+};
+
+export const updateDiagnosisWithTestAnswers = async (userId, diagnosisId, answers, linkId, secretToken) => {
+    console.log("Updating diagnosis with test answers:", { userId, diagnosisId });
+
+    try {
+        const diagnosisDocRef = doc(firestore, "Users", userId, "Diagnoses", diagnosisId);
+        
+        const updateData = {
+            answers: answers,
+            lastUpdated: new Date(),
+            status: "completed",
+            linkId: linkId,
+            secretToken: secretToken
+        };
+
+        await setDoc(diagnosisDocRef, updateData, { merge: true });
+        console.log("Diagnosis updated successfully with test answers");
+    } catch (error) {
+        console.error("Error updating diagnosis with test answers:", error);
         throw error;
     }
 };

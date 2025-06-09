@@ -3,10 +3,18 @@ import { auth, firestore } from "../firebase";
 import { v4 as uuidv4 } from "uuid";
 import { getDiagnosticDataByUUID } from "./diagnoses";
 
+// Function to generate a secure random token
+const generateSecureToken = () => {
+    const array = new Uint8Array(32);
+    window.crypto.getRandomValues(array);
+    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+};
+
 export const generateNewLinkTest = async (userId, diagnosisId) => {
     console.log("Generating new link for user:", userId, "and diagnosis:", diagnosisId);
 
     const linkId = uuidv4();
+    const secretToken = generateSecureToken(); // Use our browser-compatible function
     const expirationDate = new Date();
     expirationDate.setDate(expirationDate.getDate() + 14);
     const diagnosticData = await getDiagnosticDataByUUID(diagnosisId);
@@ -29,35 +37,93 @@ export const generateNewLinkTest = async (userId, diagnosisId) => {
             createdAt: new Date(),
             kORs: kORs,
             pORt: pORt,
+            secretToken: secretToken,
         };
 
         await setDoc(linkDocRef, data);
 
         console.log("New link generated:", linkId);
-        return linkId;
+        return { linkId, secretToken };
     } catch (error) {
         console.error("Error generating new link:", error);
         throw error;
     }
 };
 
-
-export const getLinkData = async (linkId) => {
+export const getLinkData = async (linkId, secretToken) => {
     console.log("Getting link data for link:", linkId);
 
     try {
         const linkDocRef = doc(firestore, "Links", linkId);
-        const linkDoc = await getDoc(linkDocRef)
-
+        const linkDoc = await getDoc(linkDocRef);
+        
         if (!linkDoc.exists()) {
             throw new Error("Link not found");
         }
 
         const linkData = linkDoc.data();
+        
+        // Verify the secret token
+        if (linkData.secretToken !== secretToken) {
+            throw new Error("Invalid link");
+        }
+
+        // Check if already submitted
+        if (linkData.submitted) {
+            throw new Error("Link already submitted");
+        }
+
+        // Check if expired
+        if (new Date() > linkData.expirationDate.toDate()) {
+            throw new Error("Link expired");
+        }
+
         console.log("Link data found:", linkData);
         return linkData;
     } catch (error) {
         console.error("Error getting link data:", error);
+        throw error;
+    }
+};
+
+export const updateLinkAfterSubmission = async (linkId, secretToken, answers) => {
+    console.log("Updating link after submission:", linkId);
+
+    try {
+        const linkDocRef = doc(firestore, "Links", linkId);
+        const linkDoc = await getDoc(linkDocRef);
+        
+        if (!linkDoc.exists()) {
+            throw new Error("Link not found");
+        }
+
+        const linkData = linkDoc.data();
+        
+        // Verify the secret token
+        if (linkData.secretToken !== secretToken) {
+            throw new Error("Invalid link");
+        }
+
+        // Check if already submitted
+        if (linkData.submitted) {
+            throw new Error("Link already submitted");
+        }
+
+        // Check if expired
+        if (new Date() > linkData.expirationDate.toDate()) {
+            throw new Error("Link expired");
+        }
+        
+        const updateData = {
+            submitted: true,
+            submittedAt: new Date(),
+            answers: answers
+        };
+
+        await setDoc(linkDocRef, updateData, { merge: true });
+        console.log("Link updated successfully after submission");
+    } catch (error) {
+        console.error("Error updating link after submission:", error);
         throw error;
     }
 };

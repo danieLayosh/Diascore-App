@@ -21,10 +21,12 @@ import { ConfirmDelete } from '../modal/ConfirmDelete';
 import { GoGear } from "react-icons/go";
 import { OmrOrLink } from '../modal/OmrOrLink';
 import { OmrModal } from '../modal/OmrModal';
+import { LinkGeneratedModal } from '../modal/LinkGeneratedModal';
 import { omrRequest } from '../../api/omr_requests';
 import { mainRequest } from '../../api/main_requests';
 import { updateAnswersArray, updateDiagnosisStatus, getDiagnosticDataByUUID, uploadJsonToDiagnosis } from '../../firebase/firestore/diagnoses';
 import { generateNewLinkTest } from '../../firebase/firestore/linkTest';
+import useAlert from '../../context/useAlert';
 
 const statusColorMap = {
   COMPLETED: "success",
@@ -40,8 +42,11 @@ export const DiagList = ({ Diagnoses }) => {
   const [isOmrOrLinkOpen, setIsOmrOrLinkOpen] = useState(false);  
   const [diagnosisToProcess, setDiagnosisToProcess] = useState(null);  
   const [isOmrOpen, setIsOmrOpen] = useState(false);  
+  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+  const [generatedLink, setGeneratedLink] = useState('');
 
   const navigate = useNavigate();
+  const { showAlert } = useAlert();
 
   const handleDetailsClick = (diagnosis) => {
     setSelectedDiagnosis(diagnosis);
@@ -75,16 +80,20 @@ export const DiagList = ({ Diagnoses }) => {
     setIsOmrOrLinkOpen(false);
     if (choice === "OMR") {
       handleOmrModalOpen();
-    } else {
-      if (choice === "Link") {
-        // Generate a new Link for the diagnosis test
-        if (diagnosisToProcess) {
-          const linkId = await generateNewLinkTest(diagnosisToProcess.therapistID, diagnosisToProcess.id);
+    } else if (choice === "Link") {
+      // Generate a new Link for the diagnosis test
+      if (diagnosisToProcess) {
+        try {
+          const { linkId, secretToken } = await generateNewLinkTest(diagnosisToProcess.therapistID, diagnosisToProcess.id);
           
-          if (linkId) {
-            const linkUrl = `${window.location.origin}/diagnosis/test/${linkId}`;
-            console.log("Link URL:", linkUrl);
+          if (linkId && secretToken) {
+            const linkUrl = `${window.location.origin}/diagnosis/test/${linkId}/${secretToken}`;
+            setGeneratedLink(linkUrl);
+            setIsLinkModalOpen(true);
           }
+        } catch (error) {
+          console.error("Error generating link:", error);
+          showAlert("Failed to generate link. Please try again.", "error");
         }
       }
     }
@@ -288,6 +297,12 @@ export const DiagList = ({ Diagnoses }) => {
         isOpen={isOmrOpen}
         onOpenChange={handleOmrModalOpen}
         onConfirm={handleModalFormSubmit}
+      />
+
+      <LinkGeneratedModal
+        isOpen={isLinkModalOpen}
+        onClose={() => setIsLinkModalOpen(false)}
+        linkUrl={generatedLink}
       />
     </>
   );

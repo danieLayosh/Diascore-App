@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { getDiagnosisQuestions } from "../../api/main_requests";
-import { getLinkData } from "../../firebase/firestore/linkTest";
+import { getLinkData, updateLinkAfterSubmission } from "../../firebase/firestore/linkTest";
+import { updateDiagnosisWithTestAnswers } from "../../firebase/firestore/diagnoses";
 import { Question } from "./question";
 import useAlert from "../../context/useAlert"; 
+import { useNavigate, useParams } from 'react-router-dom';
 
 export const DiagnosisTestForm = ({ linkId }) => {
     const [linkData, setLinkData] = useState(null);
@@ -13,22 +15,27 @@ export const DiagnosisTestForm = ({ linkId }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answers, setAnswers] = useState([]);
     const { showAlert } = useAlert();
+    const navigate = useNavigate();
+    const { token } = useParams(); // Get the token from URL params
 
     useEffect(() => {
         const fetchLinkData = async () => {
             try {
-                const data = await getLinkData(linkId);
+                if (!token) {
+                    throw new Error('Invalid link');
+                }
+                const data = await getLinkData(linkId, token);
                 setLinkData(data);
                 setLoading(false);
             } catch (error) {
                 console.error(error);
-                setError('Failed to fetch link data');
+                setError('Invalid or expired link');
                 setLoading(false);
             }
         };
 
         fetchLinkData();
-    }, [linkId]);
+    }, [linkId, token]);
 
     useEffect(() => {
         const fetchQuestions = async () => {
@@ -62,25 +69,37 @@ export const DiagnosisTestForm = ({ linkId }) => {
         'ת - לעיתים קרובות/תמיד': 3
     };
     
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         // Check if all questions are answered
         if (answers.includes(null)) {
             showAlert("Please answer all questions before submitting.", "error");
             return;
         }
     
-        // Convert answers to numbers
-        const convertedAnswers = answers.map(answer => convertToNumber[answer]);
-    
-        // Process the converted answers (e.g., send them to a server)
-        console.log("Submitted Answers (Converted):", convertedAnswers);
-
-
-    
-        // Example: Send answers to an API
-        // submitAnswers({ linkId, answers: convertedAnswers }).then(response => console.log(response));
-    
-        showAlert("Answers submitted successfully!", "success");
+        try {
+            // Convert answers to numbers
+            const convertedAnswers = answers.map(answer => convertToNumber[answer]);
+            
+            // Update the link document with the secret token
+            await updateLinkAfterSubmission(linkId, token, convertedAnswers);
+            
+            // Update the diagnosis document with link information
+            await updateDiagnosisWithTestAnswers(
+                linkData.userId, 
+                linkData.diagnosisId, 
+                convertedAnswers,
+                linkId,
+                token
+            );
+            
+            showAlert("Answers submitted successfully!", "success");
+            
+            // Redirect to a thank you page or show a completion message
+            navigate('/diagnosis/thank-you');
+        } catch (error) {
+            console.error("Error submitting answers:", error);
+            showAlert("Failed to submit answers. Please try again.", "error");
+        }
     };
     
 

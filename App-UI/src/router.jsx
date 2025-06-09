@@ -5,6 +5,7 @@ import appRoutes from './data/routes';
 import PageNotFound from './pages/404Page';
 import Welcome from './pages/Welcome'; 
 import { DiagnosisTest } from './pages/Diagnosis/DiagnosisTest';
+import { ThankYou } from './pages/Diagnosis/ThankYou';
 
 const router = createBrowserRouter([
   {
@@ -19,8 +20,12 @@ const router = createBrowserRouter([
         element: <Welcome />,
       },
       {
-        path: "/diagnosis/test/:linkId",
+        path: "/diagnosis/test/:linkId/:token",
         element: <DiagnosisTest />,
+      },
+      {
+        path: "/diagnosis/thank-you",
+        element: <ThankYou />,
       },
     ],
   },
