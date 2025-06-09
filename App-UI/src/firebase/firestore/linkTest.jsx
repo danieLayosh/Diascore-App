@@ -1,4 +1,4 @@
-import { setDoc, doc, getDoc } from "firebase/firestore";
+import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { auth, firestore } from "../firebase"; 
 import { v4 as uuidv4 } from "uuid";
 import { getDiagnosticDataByUUID } from "./diagnoses";
@@ -126,4 +126,30 @@ export const updateLinkAfterSubmission = async (linkId, secretToken, answers) =>
         console.error("Error updating link after submission:", error);
         throw error;
     }
+};
+
+export const updateLinkWithAnswers = async (linkId, answers) => {
+  try {
+    console.log("Updating link with answers:", linkId);
+    const linkRef = doc(firestore, "Links", linkId);
+    const linkDoc = await getDoc(linkRef);
+
+    if (!linkDoc.exists()) {
+      throw new Error("Link not found");
+    }
+
+    const linkData = linkDoc.data();
+    if (linkData.submitted) {
+      throw new Error("This link has already been used");
+    }
+
+    await updateDoc(linkRef, {
+      answers
+    });
+
+    console.log("Link updated successfully with answers");
+  } catch (error) {
+    console.error("Error updating link with answers:", error);
+    throw error;
+  }
 };

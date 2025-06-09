@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { getDiagnosisQuestions } from "../../api/main_requests";
-import { getLinkData, updateLinkAfterSubmission } from "../../firebase/firestore/linkTest";
+import { getLinkData, updateLinkWithAnswers } from "../../firebase/firestore/linkTest";
 import { updateDiagnosisWithTestAnswers } from "../../firebase/firestore/diagnoses";
 import { Question } from "./question";
 import useAlert from "../../context/useAlert"; 
@@ -80,10 +80,10 @@ export const DiagnosisTestForm = ({ linkId }) => {
             // Convert answers to numbers
             const convertedAnswers = answers.map(answer => convertToNumber[answer]);
             
-            // Update the link document with the secret token
-            await updateLinkAfterSubmission(linkId, token, convertedAnswers);
+            // Update the link document with the secret token and answers
+            await updateLinkWithAnswers(linkId, convertedAnswers, token);
             
-            // Update the diagnosis document with link information
+            // Update the diagnosis document with link information and answers
             await updateDiagnosisWithTestAnswers(
                 linkData.userId, 
                 linkData.diagnosisId, 

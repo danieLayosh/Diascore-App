@@ -96,6 +96,10 @@ export const DiagList = ({ Diagnoses }) => {
           showAlert("Failed to generate link. Please try again.", "error");
         }
       }
+    } else if (choice === "Process") {
+      if (diagnosisToProcess) {
+        await handleCalculateScores(diagnosisToProcess);
+      }
     }
   };
 
@@ -290,7 +294,8 @@ export const DiagList = ({ Diagnoses }) => {
       <OmrOrLink 
         isOpen={isOmrOrLinkOpen} 
         onOpenChange={setIsOmrOrLinkOpen} 
-        onConfirm={handleOmrOrLinkConfirm} 
+        onConfirm={handleOmrOrLinkConfirm}
+        hasAnswers={diagnosisToProcess?.answers?.length > 0}
       />
 
       <OmrModal

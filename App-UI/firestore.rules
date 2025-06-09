@@ -2,31 +2,26 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper function to check if a link is valid
-    function isValidLink(linkId, secretToken) {
-      let link = get(/databases/$(database)/documents/Links/$(linkId));
-      return link != null 
-        && link.data.secretToken == secretToken
-        && !link.data.submitted
-        && link.data.expirationDate > request.time;
-    }
-
     match /Users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
     
     match /Users/{userId}/Diagnoses/{diagnosisId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // Allow reading if authenticated or using a valid link
+      allow read: if request.auth != null && request.auth.uid == userId
+        || (exists(/databases/$(database)/documents/Links/$(request.query.linkId))
+            && get(/databases/$(database)/documents/Links/$(request.query.linkId)).data.secretToken == request.query.secretToken
+            && get(/databases/$(database)/documents/Links/$(request.query.linkId)).data.diagnosisId == diagnosisId
+            && get(/databases/$(database)/documents/Links/$(request.query.linkId)).data.userId == userId);
       
-      // Allow updates from a valid link
-      allow update: if request.auth != null && request.auth.uid == userId
-        || (request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['answers', 'lastUpdated', 'status', 'linkId', 'secretToken'])
-            && request.resource.data.linkId is string
+      // Allow writing if authenticated or using a valid link
+      allow write: if request.auth != null && request.auth.uid == userId
+        || (request.resource.data.linkId is string
             && request.resource.data.secretToken is string
             && exists(/databases/$(database)/documents/Links/$(request.resource.data.linkId))
             && get(/databases/$(database)/documents/Links/$(request.resource.data.linkId)).data.secretToken == request.resource.data.secretToken
-            && get(/databases/$(database)/documents/Links/$(request.resource.data.linkId)).data.diagnosisId == diagnosisId);
+            && get(/databases/$(database)/documents/Links/$(request.resource.data.linkId)).data.diagnosisId == diagnosisId
+            && get(/databases/$(database)/documents/Links/$(request.resource.data.linkId)).data.userId == userId);
     }
     
     match /Links/{linkId} {

@@ -1,0 +1,129 @@
+.diagnosis-list {
+  padding: 20px;
+}
+
+.diagnosis-item {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.diagnosis-info h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.diagnosis-info p {
+  margin: 5px 0;
+  color: #666;
+}
+
+.diagnosis-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.process-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.process-button:hover {
+  background-color: #45a049;
+}
+
+.process-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.view-button {
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.view-button:hover {
+  background-color: #1976D2;
+}
+
+/* Loading state */
+.diagnosis-list.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.loading-spinner {
+  color: #666;
+  font-size: 1.2em;
+}
+
+/* Error state */
+.diagnosis-list.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.error-message {
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  max-width: 400px;
+}
+
+.error-message h3 {
+  color: #c62828;
+  margin: 0 0 10px 0;
+}
+
+.error-message p {
+  color: #666;
+  margin: 0 0 20px 0;
+}
+
+.error-message button {
+  background-color: #c62828;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.error-message button:hover {
+  background-color: #b71c1c;
+}
+
+/* Empty state */
+.diagnosis-list.empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  color: #666;
+  font-size: 1.2em;
+} 
