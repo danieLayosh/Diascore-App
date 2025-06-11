@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { getDiagnosisQuestions } from "../../api/main_requests";
 import { getLinkData, updateLinkWithAnswers } from "../../firebase/firestore/linkTest";
 import { updateDiagnosisWithTestAnswers } from "../../firebase/firestore/diagnoses";
-import { Question } from "./question";
+import { Question } from "./Question";
 import useAlert from "../../context/useAlert"; 
 import { useNavigate, useParams } from 'react-router-dom';
 
