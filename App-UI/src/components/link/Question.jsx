@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
-import { RadioGroup, Radio, Button, Card, CardBody, CardHeader } from "@nextui-org/react";
-import { ChevronLeft, ChevronRight } from "lucide-react"; // Arrow icons
+import { RadioGroup, Radio } from "@heroui/radio";
+import { Button } from "@heroui/button";
+import { Card, CardBody, CardHeader } from "@heroui/card";import { ChevronLeft, ChevronRight } from "lucide-react"; // Arrow icons
 
 export const Question = ({ index, question, selectedAnswer, onAnswer, onPrev, onNext, isLast }) => {
     const options = ['א - אף פעם לא', 'פ - לפעמים', 'ת - לעיתים קרובות/תמיד']; // Answer choices in Hebrew
