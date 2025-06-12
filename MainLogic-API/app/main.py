@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, Header
 import uvicorn
-from routers.questions import router_questions
+from app.routers.questions import router_questions
 import os
 from dotenv import load_dotenv 
 from fastapi.middleware.cors import CORSMiddleware

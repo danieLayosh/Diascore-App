@@ -1,11 +1,11 @@
 from fastapi import APIRouter
-from models.MainLogicRequest import AnswerSumRequest, AnswerSumRuqestWithCred, processrequestDone
-from services.check_questions.kids import check_questions as check_kids
-from services.check_questions.school import check_questions as check_school
-from services.excel_service import process_all_scores
-from services.validate_request import validate_request_params
-import services.questions_list as questions_list
-import services.firebase.firestore as firestore
+from app.models.MainLogicRequest import AnswerSumRequest, AnswerSumRuqestWithCred, processrequestDone
+from app.services.check_questions.kids import check_questions as check_kids
+from app.services.check_questions.school import check_questions as check_school
+from app.services.excel_service import process_all_scores
+from app.services.validate_request import validate_request_params
+import app.services.questions_list as questions_list
+import app.services.firebase.firestore as firestore
 
 router_questions = APIRouter()
 

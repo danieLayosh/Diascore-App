@@ -2,7 +2,7 @@ import pandas as pd
 import os
 from fastapi import HTTPException
 from .file_service import get_fileName_full_path
-from models.MainLogicRequest import AnswerSumRuqestWithCred, processrequestDone
+from app.models.MainLogicRequest import AnswerSumRuqestWithCred, processrequestDone
 
 def load_excel_file(gender: str, age: float, file_type: str, pORt: str, kORs: str) -> pd.DataFrame:
     """Loads the appropriate Excel file based on gender, age, and file type."""

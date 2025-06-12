@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from models.MainLogicRequest import AnswerSumRequest
+from app.models.MainLogicRequest import AnswerSumRequest
 from pydantic import ValidationError
 
 def validate_request_params(request: AnswerSumRequest) -> bool:
