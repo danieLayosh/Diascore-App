@@ -10,8 +10,8 @@ export default defineConfig({
     allowedHosts: [
       'diascore.layco.tech',
       'localhost',
-      '127.0.0.1',
-      "diascore-backend.layco.tech"
-    ]
+      '127.0.0.1'
+    ],
+    cors: true
   }
 })

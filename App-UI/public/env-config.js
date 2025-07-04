@@ -1,0 +1,13 @@
+window.env = {
+  VITE_FIREBASE_API_KEY: "AIzaSyD7kW7WsKZgxELpXEn5k3kqyGiU0mF70qQ",
+  VITE_FIREBASE_AUTH_DOMAIN: "diascore.firebaseapp.com",
+  VITE_FIREBASE_PROJECT_ID: "diascore",
+  VITE_FIREBASE_STORAGE_BUCKET: "diascore.firebasestorage.app",
+  VITE_FIREBASE_MESSAGING_SENDER_ID: "601991649829",
+  VITE_FIREBASE_APP_ID: "1:601991649829:web:996ab01f7051d753f2bdcc",
+  VITE_FIREBASE_MEASUREMENT_ID: "G-F6HWBKQV4T",
+  VITE_OMR_API_KEY: "6fafd670-cb23-4a1d-8a72-4a0557675178",
+  VITE_MAIN_LOGIC_KEY: "5e0250d5-55cc-42dd-a685-b3c54a459d0c",
+  VITE_OMR_API_URL: "http://127.0.0.1:8001/api/v1/omr/process-omr",
+  VITE_MAIN_API_URL: "https://diascore-backend.layco.tech/"
+}

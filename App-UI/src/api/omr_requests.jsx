@@ -1,6 +1,6 @@
 export const omrRequest = async (file1, file2, pORt, kORs) => {
-  const apiKey = window.env.VITE_OMR_API_KEY; 
-  const url = window.env.VITE_OMR_API_URL;
+  const apiKey = import.meta.env.VITE_OMR_API_KEY; 
+  const url = import.meta.env.VITE_OMR_API_URL;
 
   // Convert blob URLs to actual files
   const convertBlobToFile = async (blobUrl) => {

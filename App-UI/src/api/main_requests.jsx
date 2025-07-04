@@ -1,6 +1,6 @@
 export const mainRequest = async (gender, age, pORt, kORs, answers) => {
-  const apiKey = window.env.VITE_MAIN_LOGIC_KEY;
-  let url = window.env.VITE_MAIN_API_URL;
+  const apiKey = import.meta.env.VITE_MAIN_LOGIC_KEY;
+  let url = import.meta.env.VITE_MAIN_API_URL;
   url = `${url}questions/sum`;
 
   // Convert answers object to a list (array)
@@ -43,12 +43,9 @@ export const mainRequest = async (gender, age, pORt, kORs, answers) => {
 export const getDiagnosisQuestions = async (kORs, pORt) => {
   console.log("getDiagnosisQuestions", kORs, pORt);
 
-  const apiKey = window.env.VITE_MAIN_LOGIC_KEY;
-  let url = window.env.VITE_MAIN_API_URL;
-  console.log("URL for getDiagnosisQuestions:", url);
-
+  const apiKey = import.meta.env.VITE_MAIN_LOGIC_KEY;
+  let url = import.meta.env.VITE_MAIN_API_URL;
   if (kORs === "kids" || kORs === "school" && pORt === "p" || pORt === "t") {
-    // url = `${url}questions/test/?pORt=${pORt}&kORs=${kORs}`;
     url = `${url}questions/test/?pORt=${pORt}&kORs=${kORs}`;
 
     try {
