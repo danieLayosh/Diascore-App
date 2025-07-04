@@ -52,13 +52,11 @@ pydantic-settings==2.6.0
 pydantic_core==2.27.1
 Pygments==2.18.0
 pyparsing==3.1.2
-pypiwin32==223
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 python-multipart==0.0.17
 pyttsx3==2.90
 pytz==2024.2
-pywin32==306
 PyYAML==6.0.2
 requests==2.32.3
 rich==13.9.3

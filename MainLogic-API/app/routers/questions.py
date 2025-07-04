@@ -1,3 +1,4 @@
+from http.client import HTTPException
 from fastapi import APIRouter
 from app.models.MainLogicRequest import AnswerSumRequest, AnswerSumRuqestWithCred, processrequestDone
 from app.services.check_questions.kids import check_questions as check_kids
@@ -29,7 +30,14 @@ async def get_request_body():
 
 @router_questions.get("/questions/test/")
 async def get_questions_test(pORt: str, kORs: str) -> list[str]:
-    return questions_list.get_questions_list(pORt=pORt, kORs=kORs)
+    try:
+        result = questions_list.get_questions_list(pORt=pORt, kORs=kORs)
+        return result
+    except Exception as e:
+        # Log the error for debugging
+        print(f"Error in get_questions_test: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
         
         
 @router_questions.get("/questions/{collection}/{doc_id}")
