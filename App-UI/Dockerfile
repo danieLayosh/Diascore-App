@@ -22,7 +22,7 @@ RUN npm run build
 FROM nginx:stable-alpine AS production
 
 # Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy build output from builder
 COPY --from=builder /react-app/dist /usr/share/nginx/html

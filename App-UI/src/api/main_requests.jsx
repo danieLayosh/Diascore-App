@@ -45,7 +45,10 @@ export const getDiagnosisQuestions = async (kORs, pORt) => {
 
   const apiKey = window.env.VITE_MAIN_LOGIC_KEY;
   let url = window.env.VITE_MAIN_API_URL;
+  console.log("URL for getDiagnosisQuestions:", url);
+
   if (kORs === "kids" || kORs === "school" && pORt === "p" || pORt === "t") {
+    // url = `${url}questions/test/?pORt=${pORt}&kORs=${kORs}`;
     url = `${url}questions/test/?pORt=${pORt}&kORs=${kORs}`;
 
     try {
