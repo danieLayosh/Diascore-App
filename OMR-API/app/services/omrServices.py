@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from fastapi import HTTPException
-import utils.Utils as utils
+from app.utils import Utils as utils
 
 def preprocess_image(img, width: int, height: int) -> tuple:
     """
