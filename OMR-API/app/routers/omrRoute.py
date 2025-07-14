@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, UploadFile, Form, File
-from models.omrModels import OMRResponse
-from services.omr import do_omr_two_pages, read_image
+from app.models.omrModels import OMRResponse
+from app.services.omr import do_omr_two_pages, read_image
 from typing import List
 
 omrRouter = APIRouter()

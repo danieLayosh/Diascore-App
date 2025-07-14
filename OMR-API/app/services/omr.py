@@ -3,7 +3,7 @@ from io import BytesIO
 from PIL import Image
 import cv2
 import numpy as np
-import services.omrServices as omr
+from app.services import omrServices as omr
 
 def read_image(file: UploadFile) -> np.ndarray:
     """

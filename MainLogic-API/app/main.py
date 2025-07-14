@@ -41,7 +41,7 @@ app.include_router(router_questions)
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the DIASCORE-BASCKEND FastAPI application"}
+    return {"message": "Welcome to the DIASCORE-BACKEND FastAPI application"}
 
 @app.get("/test-cors")
 def test():
